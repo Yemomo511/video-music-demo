@@ -1,15 +1,19 @@
 {
   "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
-    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
-    "baseUrl": ".", // 配置基础地址
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "baseUrl": "src",
     "paths": {
-      "@": ["src/*"],
-      "@assets": ["src/assets"],
-      "@components": ["src/components"],
-      "@modules": ["src/modules"],
-      "@stores": ["src/stores"],
-      "@utils": ["src/utils"]
-    }
-  }
+      "~component/*":["components/*"],
+      "~assets/*":["assets/*"],
+      "~screen/*":["screen/*"],
+      "~image/*":["image/*"]
+    },
+  },
+  "exclude": [
+    "metro.config.js",
+    "babel.config.js",
+  ]
 }
