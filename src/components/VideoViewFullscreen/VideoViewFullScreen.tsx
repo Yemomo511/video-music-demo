@@ -1,5 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -16,9 +18,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import SliderBar from '../SliderBar/SliderBar';
+import SliderBar from '../SliderBarFullScreen/SliderBarFullScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../Voice/Voice';
+import {TextInput} from 'react-native-gesture-handler';
 interface props {
   source: string;
   paused: boolean;
@@ -29,7 +32,7 @@ interface videoTime {
   playableDuration: number;
   seekableDuration: number;
 }
-export default function VideoView(props: props) {
+export default function VideoViewFullscreen(props: props) {
   const {source, paused} = props;
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
@@ -79,44 +82,60 @@ export default function VideoView(props: props) {
         style={{
           width: '100%',
         }}>
-        <Animated.View style={[styles.footerBox, footerAnimatedStyle]}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setPausedState(!pausedState);
-            }}>
-            <FastImage
-              source={
-                pausedState
-                  ? imageUrl.video.startFooter
-                  : imageUrl.video.pausedFooter
-              }
-              style={{
-                width: 30,
-                height: 30,
-              }}></FastImage>
-          </TouchableWithoutFeedback>
-          {/*进度条组件 */}
-
+        <Animated.View style={[footerAnimatedStyle,{
+         justifyContent:"flex-end",   
+        }]}>
           <SliderBar
             currentTimeState={currentTime}
             allTime={allTimeData}
             setVideoTime={setVideoTimeMySet}></SliderBar>
-          <TouchableOpacity
-          activeOpacity={1}
-            onPress={() => {
-              //组件渲染即可
-              setIsOpenVoice(!isOpenVoice);
-            }}>
-            <Voice isOpenVoice={isOpenVoice}></Voice>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <FastImage
-              source={imageUrl.video.fullScreen}
+          <View style={styles.footerBox}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setPausedState(!pausedState);
+              }}>
+              <FastImage
+                source={
+                  pausedState
+                    ? imageUrl.video.startFooter
+                    : imageUrl.video.pausedFooter
+                }
+                style={{
+                  width: 40,
+                  height: 40,
+                }}></FastImage>
+            </TouchableWithoutFeedback>
+            {/*弹幕输入框 */}
+
+            <TextInput
               style={{
-                width: 30,
-                height: 30,
-              }}></FastImage>
-          </TouchableOpacity>
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                borderRadius: 1000,
+                width: '50%',
+                height: 40,
+                paddingLeft: 10,
+              }}
+              selectionColor={'pink'}
+              placeholder="发个弹幕记录一下当下"
+              placeholderTextColor={'rgba(0,0,0,0.7)'}></TextInput>
+
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {
+                //组件渲染即可
+                setIsOpenVoice(!isOpenVoice);
+              }}>
+              <Voice isOpenVoice={isOpenVoice}></Voice>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <FastImage
+                source={imageUrl.video.fullScreen}
+                style={{
+                  width: 40,
+                  height: 40,
+                }}></FastImage>
+            </TouchableOpacity>
+          </View>
           {/*全屏控件*/}
         </Animated.View>
       </LinearGradient>
@@ -135,14 +154,14 @@ export default function VideoView(props: props) {
           <FastImage
             source={imageUrl.common.back}
             style={{
-              width: 30,
-              height: 30,
+              width: 40,
+              height: 40,
             }}></FastImage>
           <FastImage
             source={imageUrl.common.option}
             style={{
-              width: 30,
-              height: 30,
+              width: 40,
+              height: 40,
             }}></FastImage>
         </Animated.View>
       </LinearGradient>
@@ -170,7 +189,7 @@ export default function VideoView(props: props) {
                   };
                 });
               }
-              setCurrentTime(()=>{
+              setCurrentTime(() => {
                 return event.currentTime;
               });
             }}
@@ -178,12 +197,21 @@ export default function VideoView(props: props) {
             ref={videoRef}
             currentPlaybackTime={currentTime}></Video>
         </Animated.View>
+
         <View
           style={{
             ...styles.upOnVideoBox,
           }}>
           {renderNav}
-          {renderFooter}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{
+              width: '100%',
+              position:"absolute",
+              bottom:0,
+            }}>
+            {renderFooter}
+          </KeyboardAvoidingView>
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -196,7 +224,7 @@ const styles = StyleSheet.create({
   },
   videoBox: {
     width: style.DeviceWidth,
-    height: style.DeviceWidth * (9 / 16),
+    height: style.DeviceHeight,
     backgroundColor: 'black',
   },
   upOnVideoBox: {
@@ -212,12 +240,13 @@ const styles = StyleSheet.create({
   footerBox: {
     flexDirection: 'row',
     width: '100%',
-    padding: 10,
+    padding: 20,
+    paddingTop: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   bottomBox: {
-    padding: 10,
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignContent: 'center',

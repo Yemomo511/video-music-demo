@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import Slider from '@react-native-community/slider';
 import style from 'common/style';
 import imageUrl from '../../image/image';
-export default function SliderBar({
+export default function SliderBarFullScreen({
     currentTimeState,
     allTime,
     setVideoTime,
@@ -36,6 +36,11 @@ export default function SliderBar({
     },[allTime,currentTimeState])
   return (
     <View style={styles.box}>
+         <Text style={{
+            color:"white",
+            fontSize:12,
+            alignSelf:"flex-start"
+        }}>{currentTime}/{fullTime}</Text>
         <Slider 
         value={progressValue} 
         onValueChange={onSliderChange}
@@ -45,22 +50,20 @@ export default function SliderBar({
         minimumTrackTintColor={"pink"}
         >
         </Slider>
-        <Text style={{
-            color:"white",
-            fontSize:12,
-        }}>{currentTime}/{fullTime}</Text>
+       
     </View>
   )
 }
 const styles = StyleSheet.create({
     box:{
-        flexDirection:"row",
+        flexDirection:"column",
         columnGap:10,
         justifyContent:"center",
         alignItems:"center",
+        padding:10,
     },
     slider:{
-        width:(style.DeviceWidth-100)*0.5,
+        width:(style.DeviceWidth-20),
         height:20,
     }
 })

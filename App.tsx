@@ -16,7 +16,9 @@ import {
   Colors,
 } from 'react-native/Libraries/NewAppScreen';
 import VideoView from './src/components/VideoView/VideoView';
+import VideoViewFullscreen from './src/components/VideoViewFullscreen/VideoViewFullScreen';
 import mp4 from "./src/assets/app.mp4"
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -26,7 +28,7 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <VideoView source={mp4} paused={false} title={"飞书会议"}></VideoView>
+      <VideoViewFullscreen source={mp4} paused={true} title={"飞书会议"}></VideoViewFullscreen>
     </SafeAreaView>
   );
 }
@@ -34,4 +36,4 @@ function App(): JSX.Element {
 const styles = StyleSheet.create({
 });
 
-export default App;
+export default gestureHandlerRootHOC(App);
