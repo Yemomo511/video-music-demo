@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import style from 'common/style';
+import style from '../../common/style';
 import Video from 'react-native-video';
 import imageUrl from '../../image/image';
 import FastImage from 'react-native-fast-image';
@@ -26,6 +26,9 @@ interface props {
   source: string;
   paused: boolean;
   title: string;
+  currentTime?: number;
+  fullTime?:number;
+  id: string;
 }
 interface videoTime {
   currentTime: number;
@@ -33,18 +36,20 @@ interface videoTime {
   seekableDuration: number;
 }
 export default function VideoViewFullscreen(props: props) {
-  const {source, paused} = props;
+  const {source, paused, currentTime: currentTimePass,fullTime} = props;
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
   const [allTimeData, setAllTimeData] = useState({
-    playableDuration: 1,
+    playableDuration: fullTime?fullTime:1,
     seekableDuration: 1,
   });
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [videoTimeMySet, setVideoTimeMySet] = useState(0);
+  const [currentTime, setCurrentTime] = useState<number>(
+    currentTimePass == undefined ? 0 : currentTimePass,
+  );
+  const [videoTimeMySet, setVideoTimeMySet] = useState(currentTimePass == undefined ? 0 : currentTimePass);
   const [isOpenVoice, setIsOpenVoice] = useState(true);
-  const [isOpenMessage,setIsOpenMessage] = useState(true)
+  const [isOpenMessage, setIsOpenMessage] = useState(true);
   const videoRef = useRef<any>();
   const footerShow = useSharedValue<boolean>(false);
 
@@ -83,9 +88,13 @@ export default function VideoViewFullscreen(props: props) {
         style={{
           width: '100%',
         }}>
-        <Animated.View style={[footerAnimatedStyle,{
-         justifyContent:"flex-end",   
-        }]}>
+        <Animated.View
+          style={[
+            footerAnimatedStyle,
+            {
+              justifyContent: 'flex-end',
+            },
+          ]}>
           <SliderBar
             currentTimeState={currentTime}
             allTime={allTimeData}
@@ -107,16 +116,20 @@ export default function VideoViewFullscreen(props: props) {
                   height: 40,
                 }}></FastImage>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback 
-            onPress={()=>{
-                setIsOpenMessage(!isOpenMessage)
-            }}>
-                <FastImage
-                    source={isOpenMessage?imageUrl.video.messageOpen:imageUrl.video.messageClose}
-                    style={{
-                    width: 40,
-                    height: 40,
-                    }}></FastImage>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setIsOpenMessage(!isOpenMessage);
+              }}>
+              <FastImage
+                source={
+                  isOpenMessage
+                    ? imageUrl.video.messageOpen
+                    : imageUrl.video.messageClose
+                }
+                style={{
+                  width: 40,
+                  height: 40,
+                }}></FastImage>
             </TouchableWithoutFeedback>
             {/*弹幕输入框 */}
             <TextInput
@@ -152,7 +165,14 @@ export default function VideoViewFullscreen(props: props) {
         </Animated.View>
       </LinearGradient>
     );
-  }, [footerShow, pausedState, currentTime, allTimeData, isOpenVoice,isOpenMessage]);
+  }, [
+    footerShow,
+    pausedState,
+    currentTime,
+    allTimeData,
+    isOpenVoice,
+    isOpenMessage,
+  ]);
 
   //顶部组件
   const renderNav = useMemo(() => {
@@ -192,13 +212,13 @@ export default function VideoViewFullscreen(props: props) {
             paused={pausedState}
             source={source}
             style={styles.videoBox}
-            onLoad={(event:any)=>{
-                setAllTimeData(() => {
-                    return {
-                      playableDuration: event.duration,
-                      seekableDuration: event.duration,
-                    };
-                  });
+            onLoad={(event: any) => {
+              setAllTimeData(() => {
+                return {
+                  playableDuration: event.duration,
+                  seekableDuration: event.duration,
+                };
+              });
             }}
             onProgress={(event: videoTime) => {
               setCurrentTime(() => {
@@ -218,8 +238,8 @@ export default function VideoViewFullscreen(props: props) {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{
               width: '100%',
-              position:"absolute",
-              bottom:0,
+              position: 'absolute',
+              bottom: 0,
             }}>
             {renderFooter}
           </KeyboardAvoidingView>

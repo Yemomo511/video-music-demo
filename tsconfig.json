@@ -4,12 +4,12 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "react-native",
-    "baseUrl": "src",
+    // "baseUrl": ".",
     "paths": {
-      "~component/*":["components/*"],
-      "~assets/*":["assets/*"],
-      "~screen/*":["screen/*"],
-      "~image/*":["image/*"]
+      // "~component/*":["components/*"],
+      // "~assets/*":["assets/*"],
+      // "~screen/*":["screen/*"],
+      // "~image/*":["image/*"]
     },
   },
   "exclude": [

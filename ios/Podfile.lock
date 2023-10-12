@@ -389,6 +389,8 @@ PODS:
   - React-jsinspector (0.72.5)
   - React-logger (0.72.5):
     - glog
+  - react-native-safe-area-context (4.7.2):
+    - React-Core
   - react-native-slider (4.4.3):
     - React-Core
   - react-native-video (5.2.1):
@@ -541,6 +543,9 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNScreens (3.25.0):
+    - React-Core
+    - React-RCTImage
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -599,6 +604,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-video (from `../node_modules/react-native-video`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -621,6 +627,7 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -689,6 +696,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
   react-native-video:
@@ -733,6 +742,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -772,6 +783,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ff70a72027dea5cc7d71cfcc6fad7f599f63987a
   React-jsinspector: aef73cbd43b70675f572214d10fa438c89bf11ba
   React-logger: 2e4aee3e11b3ec4fa6cfd8004610bbb3b8d6cca4
+  react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
   react-native-slider: 1cdd6ba29675df21f30544253bf7351d3c2d68c4
   react-native-video: c26780b224543c62d5e1b2a7244a5cd1b50e8253
   React-NativeModulesApple: 797bc6078d566eef3fb3f74127e6e1d2e945a15f
@@ -794,6 +806,7 @@ SPEC CHECKSUMS:
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
   RNGestureHandler: bb86e378287f7713baf3ca205423eb8109790022
   RNReanimated: ab2e96c6d5591c3dfbb38a464f54c8d17fb34a87
+  RNScreens: 85d3880b52d34db7b8eeebe2f1a0e807c05e69fa
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17

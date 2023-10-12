@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import style from 'common/style';
+import style from '../../common/style';
 import Video from 'react-native-video';
 import imageUrl from '../../image/image';
 import FastImage from 'react-native-fast-image';
@@ -19,10 +19,14 @@ import Animated, {
 import SliderBar from '../SliderBar/SliderBar';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../Voice/Voice';
+import { useNavigation } from '@react-navigation/native';
 interface props {
   source: string;
   paused: boolean;
   title: string;
+  currentTime?:number
+  fullTime?:number
+  id: string
 }
 interface videoTime {
   currentTime: number;
@@ -30,18 +34,19 @@ interface videoTime {
   seekableDuration: number;
 }
 export default function VideoView(props: props) {
-  const {source, paused} = props;
+  const {source, paused,currentTime:currentTimePass,fullTime} = props;
+  const navigation:any = useNavigation()
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
   const [allTimeData, setAllTimeData] = useState({
-    playableDuration: 1,
+    playableDuration: fullTime?fullTime:1,
     seekableDuration: 1,
   });
-  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [currentTime, setCurrentTime] = useState<number>(currentTimePass==undefined?0:currentTimePass);
   const [videoTimeMySet, setVideoTimeMySet] = useState(0);
   const [isOpenVoice, setIsOpenVoice] = useState(true);
-  const videoRef = useRef<any>();
+  const videoRef:any = useRef();
   const footerShow = useSharedValue<boolean>(false);
 
   useEffect(() => {
@@ -73,6 +78,15 @@ export default function VideoView(props: props) {
   });
   //底部组件
   const renderFooter = useMemo(() => {
+    const toFullScreen = ()=>{
+      navigation.push("全屏视频",{
+        source:source,
+        paused:pausedState,
+        currentTime:currentTime,
+        fullTime:allTimeData.seekableDuration,
+        id:props.id
+      })
+    }
     return (
       <LinearGradient
         colors={['rgba(255,255,255,0)', 'rgba(0,0,0,0.5)']}
@@ -109,7 +123,7 @@ export default function VideoView(props: props) {
             }}>
             <Voice isOpenVoice={isOpenVoice}></Voice>
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={toFullScreen}>
             <FastImage
               source={imageUrl.video.fullScreen}
               style={{
@@ -161,15 +175,15 @@ export default function VideoView(props: props) {
             paused={pausedState}
             source={source}
             style={styles.videoBox}
-            onProgress={(event: videoTime) => {
-              if (allTimeData.playableDuration == 1) {
-                setAllTimeData(() => {
+            onLoad={(event:any)=>{
+              setAllTimeData(() => {
                   return {
-                    playableDuration: event.playableDuration,
-                    seekableDuration: event.seekableDuration,
+                    playableDuration: event.duration,
+                    seekableDuration: event.duration,
                   };
                 });
-              }
+           }}
+            onProgress={(event: videoTime) => {
               setCurrentTime(()=>{
                 return event.currentTime;
               });
