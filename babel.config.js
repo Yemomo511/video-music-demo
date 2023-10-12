@@ -14,6 +14,12 @@ module.exports = {
         },
       },
     ],
+    [
+      "import",
+      {
+        libraryName:"@ant-design/react-native", 
+      },
+    ],
     'react-native-reanimated/plugin',
   ],
 };

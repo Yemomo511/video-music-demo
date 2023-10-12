@@ -26,7 +26,7 @@ function App(): JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
-      <VideoView source={mp4}></VideoView>
+      <VideoView source={mp4} paused={false} title={"飞书会议"}></VideoView>
     </SafeAreaView>
   );
 }
