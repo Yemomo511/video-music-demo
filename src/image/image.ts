@@ -6,7 +6,10 @@ const imageUrl = {
         pausedFooter:require("../../images/video/pausedFooter.webp"),
         bilibili:require("../../images/video/bilibili-icon.png"),
         voiceOpen:require("../../images/video/voiceOpen.webp"),
-        voiceClose:require("../../images/video/voiceClose.webp")
+        voiceClose:require("../../images/video/voiceClose.webp"),
+        messageOpen:require("../../images/video/messageOpen.webp"),
+        messageClose:require("../../images/video/messageClose.webp"),
+
     },
     common:{
         back:require("../../images/video/back.webp"),
