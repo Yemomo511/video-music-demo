@@ -22,12 +22,13 @@ import SliderBar from '../SliderBarFullScreen/SliderBarFullScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../Voice/Voice';
 import {TextInput} from 'react-native-gesture-handler';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 interface props {
   source: string;
   paused: boolean;
   title: string;
   currentTime?: number;
-  fullTime?:number;
+  fullTime?: number;
   id: string;
 }
 interface videoTime {
@@ -36,23 +37,31 @@ interface videoTime {
   seekableDuration: number;
 }
 export default function VideoViewFullscreen(props: props) {
-  const {source, paused, currentTime: currentTimePass,fullTime} = props;
+  const {source, paused, currentTime: currentTimePass, fullTime, id} = props;
+  const navigation: any = useNavigation();
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
   const [allTimeData, setAllTimeData] = useState({
-    playableDuration: fullTime?fullTime:1,
+    playableDuration: fullTime ? fullTime : 1,
     seekableDuration: 1,
   });
   const [currentTime, setCurrentTime] = useState<number>(
     currentTimePass == undefined ? 0 : currentTimePass,
   );
-  const [videoTimeMySet, setVideoTimeMySet] = useState(currentTimePass == undefined ? 0 : currentTimePass);
+  const [videoTimeMySet, setVideoTimeMySet] = useState(
+    currentTimePass == undefined ? 0 : currentTimePass,
+  );
   const [isOpenVoice, setIsOpenVoice] = useState(true);
   const [isOpenMessage, setIsOpenMessage] = useState(true);
   const videoRef = useRef<any>();
   const footerShow = useSharedValue<boolean>(false);
-
+  const offsetY = useSharedValue<number>(0);
+  useEffect(() => {
+    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
+    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
+    setPausedState(paused);
+  }, [currentTimePass, paused]);
   useEffect(() => {
     if (videoRef?.current?.seek != undefined) {
       videoRef?.current?.seek(videoTimeMySet);
@@ -80,6 +89,21 @@ export default function VideoViewFullscreen(props: props) {
       ],
     };
   });
+  const videoAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: withTiming(offsetY.value)}],
+    };
+  });
+  const toDetailScreen = () => {
+    navigation.navigate('视频详细', {
+      source: source,
+      paused: pausedState,
+      currentTime: currentTime,
+      fullTime: allTimeData.seekableDuration,
+      id: id,
+    });
+    setPausedState(true);
+  };
   //底部组件
   const renderFooter = useMemo(() => {
     return (
@@ -152,7 +176,7 @@ export default function VideoViewFullscreen(props: props) {
               }}>
               <Voice isOpenVoice={isOpenVoice}></Voice>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={toDetailScreen}>
               <FastImage
                 source={imageUrl.video.fullScreen}
                 style={{
@@ -183,12 +207,15 @@ export default function VideoViewFullscreen(props: props) {
           width: '100%',
         }}>
         <Animated.View style={[naVAnimatedStyle, styles.bottomBox]}>
-          <FastImage
-            source={imageUrl.common.back}
-            style={{
-              width: 40,
-              height: 40,
-            }}></FastImage>
+          <TouchableOpacity onPress={toDetailScreen}>
+            <FastImage
+              source={imageUrl.common.back}
+              style={{
+                width: 40,
+                height: 40,
+              }}></FastImage>
+          </TouchableOpacity>
+
           <FastImage
             source={imageUrl.common.option}
             style={{
@@ -207,7 +234,7 @@ export default function VideoViewFullscreen(props: props) {
         footerShow.value = !footerShow.value;
       }}>
       <Animated.View style={styles.box}>
-        <Animated.View>
+        <Animated.View style={[videoAnimatedStyle]}>
           <Video
             paused={pausedState}
             source={source}
@@ -225,7 +252,7 @@ export default function VideoViewFullscreen(props: props) {
                 return event.currentTime;
               });
             }}
-            muted={isOpenVoice}
+            muted={!isOpenVoice}
             ref={videoRef}
             currentPlaybackTime={currentTime}></Video>
         </Animated.View>

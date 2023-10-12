@@ -6,21 +6,16 @@
  */
 
 import React from 'react';
-import {
-  SafeAreaView,  
-  StyleSheet,
-  useColorScheme,
-
-} from 'react-native';
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+import {SafeAreaView, StyleSheet, useColorScheme} from 'react-native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 import VideoView from './src/components/VideoView/VideoView';
-import mp4 from "./src/assets/app.mp4"
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import mp4 from './src/assets/app.mp4';
+import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import VideoDetail from './src/screen/VideoDetail/VideoDetail';
+import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
+
 import VideoFullScreen from './src/screen/VideoFullScreen/VideoFullScreen';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -28,26 +23,33 @@ function App(): JSX.Element {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
-  const {Navigator,Screen} = createNativeStackNavigator()
+  const {Navigator, Screen} = createNativeStackNavigator();
+  // const {Navigator, Screen} = createSharedElementStackNavigator();
   return (
     <NavigationContainer>
-        <Navigator initialRouteName='视频详细'>
-          <Screen name="视频详细" component={VideoDetail} options={{
-            headerShown:false,
+      <Navigator initialRouteName="视频详细">
+        <Screen
+          name="视频详细"
+          component={VideoDetail}
+          options={{
+            headerShown: false,
           }}></Screen>
-          <Screen name="全屏视频" component={VideoFullScreen} options={{
-            headerShown:false,
-          }}></Screen>
-        </Navigator>
+        <Screen
+          name="全屏视频"
+          component={VideoFullScreen}
+          options={{
+            headerShown: false,
+            gestureDirection:"vertical",
+          }}
+          ></Screen>
+      </Navigator>
     </NavigationContainer>
-      // <SafeAreaView style={backgroundStyle}>
-      //   <VideoViewFullscreen source={mp4} paused={true} title={"飞书会议"}></VideoViewFullscreen>
-      // </SafeAreaView>
-
+    // <SafeAreaView style={backgroundStyle}>
+    //   <VideoViewFullscreen source={mp4} paused={true} title={"飞书会议"}></VideoViewFullscreen>
+    // </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-});
+const styles = StyleSheet.create({});
 
 export default gestureHandlerRootHOC(App);

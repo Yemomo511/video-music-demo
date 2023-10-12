@@ -19,14 +19,14 @@ import Animated, {
 import SliderBar from '../SliderBar/SliderBar';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../Voice/Voice';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 interface props {
   source: string;
   paused: boolean;
   title: string;
-  currentTime?:number
-  fullTime?:number
-  id: string
+  currentTime?: number;
+  fullTime?: number;
+  id: string;
 }
 interface videoTime {
   currentTime: number;
@@ -34,21 +34,31 @@ interface videoTime {
   seekableDuration: number;
 }
 export default function VideoView(props: props) {
-  const {source, paused,currentTime:currentTimePass,fullTime} = props;
-  const navigation:any = useNavigation()
+  const {source, paused, currentTime: currentTimePass, fullTime} = props;
+  const navigation: any = useNavigation();
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
   const [allTimeData, setAllTimeData] = useState({
-    playableDuration: fullTime?fullTime:1,
+    playableDuration: fullTime ? fullTime : 1,
     seekableDuration: 1,
   });
-  const [currentTime, setCurrentTime] = useState<number>(currentTimePass==undefined?0:currentTimePass);
-  const [videoTimeMySet, setVideoTimeMySet] = useState(0);
+  const [currentTime, setCurrentTime] = useState<number>(
+    currentTimePass == undefined ? 0 : currentTimePass,
+  );
+  const [videoTimeMySet, setVideoTimeMySet] = useState(
+    currentTimePass == undefined ? 0 : currentTimePass,
+  );
+  useEffect(()=>{
+    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass)
+    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass)
+    setPausedState(paused)
+  },[currentTimePass,paused])
   const [isOpenVoice, setIsOpenVoice] = useState(true);
-  const videoRef:any = useRef();
+  const videoRef: any = useRef();
   const footerShow = useSharedValue<boolean>(false);
-
+  const videoWidth = useSharedValue<number>(style.DeviceWidth);
+  const videoHeight = useSharedValue<number>(style.DeviceWidth * (9 / 16));
   useEffect(() => {
     if (videoRef?.current?.seek != undefined) {
       videoRef?.current?.seek(videoTimeMySet);
@@ -76,17 +86,24 @@ export default function VideoView(props: props) {
       ],
     };
   });
+  const videoAnimatedStyle = useAnimatedStyle(()=>{
+    return {
+      width:withTiming(videoWidth.value),
+      height:withTiming(videoHeight.value)
+    }
+  })
   //底部组件
   const renderFooter = useMemo(() => {
-    const toFullScreen = ()=>{
-      navigation.push("全屏视频",{
-        source:source,
-        paused:pausedState,
-        currentTime:currentTime,
-        fullTime:allTimeData.seekableDuration,
-        id:props.id
-      })
-    }
+    const toFullScreen = () => {
+      navigation.navigate('全屏视频', {
+        source: source,
+        paused: pausedState,
+        currentTime: currentTime,
+        fullTime: allTimeData.seekableDuration,
+        id: props.id,
+      });
+      setPausedState(true)
+    };
     return (
       <LinearGradient
         colors={['rgba(255,255,255,0)', 'rgba(0,0,0,0.5)']}
@@ -116,7 +133,7 @@ export default function VideoView(props: props) {
             allTime={allTimeData}
             setVideoTime={setVideoTimeMySet}></SliderBar>
           <TouchableOpacity
-          activeOpacity={1}
+            activeOpacity={1}
             onPress={() => {
               //组件渲染即可
               setIsOpenVoice(!isOpenVoice);
@@ -170,25 +187,25 @@ export default function VideoView(props: props) {
         footerShow.value = !footerShow.value;
       }}>
       <Animated.View style={styles.box}>
-        <Animated.View>
+        <Animated.View style={[videoAnimatedStyle,styles.videoAnimatedBox]}>
           <Video
             paused={pausedState}
             source={source}
             style={styles.videoBox}
-            onLoad={(event:any)=>{
+            onLoad={(event: any) => {
               setAllTimeData(() => {
-                  return {
-                    playableDuration: event.duration,
-                    seekableDuration: event.duration,
-                  };
-                });
-           }}
+                return {
+                  playableDuration: event.duration,
+                  seekableDuration: event.duration,
+                };
+              });
+            }}
             onProgress={(event: videoTime) => {
-              setCurrentTime(()=>{
+              setCurrentTime(() => {
                 return event.currentTime;
               });
             }}
-            muted={isOpenVoice}
+            muted={!isOpenVoice}
             ref={videoRef}
             currentPlaybackTime={currentTime}></Video>
         </Animated.View>
@@ -208,8 +225,13 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
+  videoAnimatedBox:{
+    justifyContent:"center",
+    alignItems:"center",
+    backgroundColor:"black"
+  },
   videoBox: {
-    width: style.DeviceWidth,
+    width: "100%",
     height: style.DeviceWidth * (9 / 16),
     backgroundColor: 'black',
   },
