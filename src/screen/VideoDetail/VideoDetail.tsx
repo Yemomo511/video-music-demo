@@ -6,11 +6,17 @@ import Animated from 'react-native-reanimated';
 import { useStoryStore ,StoryType} from '../../store/modules/story';
 import { Text, Touchable } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import Orientation from 'react-native-orientation';
+import { useFocusEffect } from '@react-navigation/native';
 export default function VideoDetail({route}: {route: any}) {
   const {storyList,addStory,removeStory,clearStory} = useStoryStore((state)=>state)
+  
   useEffect(()=>{
     console.log(storyList)
   },[storyList])
+  useFocusEffect(()=>{
+    Orientation.lockToPortrait()
+  })
   if (!route.params) {
     return (
       <SafeAreaView>

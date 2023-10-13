@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import {SafeAreaView, StyleSheet, useColorScheme} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import VideoView from './src/components/VideoView/VideoView';
@@ -17,6 +17,7 @@ import VideoDetail from './src/screen/VideoDetail/VideoDetail';
 import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
 
 import VideoFullScreen from './src/screen/VideoFullScreen/VideoFullScreen';
+import Orientation from 'react-native-orientation';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -25,8 +26,18 @@ function App(): JSX.Element {
   };
   const {Navigator, Screen} = createNativeStackNavigator();
   // const {Navigator, Screen} = createSharedElementStackNavigator();
+  //初始时竖向锁定
+  useEffect(()=>{
+    Orientation.lockToPortrait()
+  },[])
   return (
-    <NavigationContainer>
+    <NavigationContainer onStateChange={(state:any)=>{
+      
+      if (state.routeNames[state.index]=="全屏视频") {
+        console.log("start")
+        Orientation.lockToLandscape()
+      }
+    }}>
       <Navigator initialRouteName="视频详细">
         <Screen
           name="视频详细"
