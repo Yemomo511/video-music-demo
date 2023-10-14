@@ -1,5 +1,6 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  LayoutAnimation,
   StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -19,7 +20,8 @@ import Animated, {
 import SliderBar from '../SliderBar/SliderBar';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../Voice/Voice';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {shareVideoTrans} from '../../shareTransition/shareTransition';
 interface props {
   source: string;
   paused: boolean;
@@ -49,23 +51,27 @@ export default function VideoView(props: props) {
   const [videoTimeMySet, setVideoTimeMySet] = useState(
     currentTimePass == undefined ? 0 : currentTimePass,
   );
-  useEffect(()=>{
-    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass)
-    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass)
-    setPausedState(paused)
-  },[currentTimePass,paused])
   const [isOpenVoice, setIsOpenVoice] = useState(true);
   const videoRef: any = useRef();
   const footerShow = useSharedValue<boolean>(false);
-  const videoWidth = useSharedValue<number>(style.DeviceWidth);
-  const videoHeight = useSharedValue<number>(style.DeviceWidth * (9 / 16));
+  const videoTransY = useSharedValue<number>(0);
+  useEffect(() => {
+    setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
+    setAllTimeData(()=>{
+      return {
+        playableDuration: fullTime == undefined ? 0 : fullTime,
+        seekableDuration: fullTime == undefined ? 0 : fullTime,
+      }
+    })
+    setPausedState(paused);
+  }, [paused,currentTimePass,fullTime]);
   useEffect(() => {
     if (videoRef?.current?.seek != undefined) {
       videoRef?.current?.seek(videoTimeMySet);
     }
+    setCurrentTime(videoTimeMySet);
   }, [videoTimeMySet]);
-
-  //定义style
+  
   const footerAnimatedStyle = useAnimatedStyle(() => {
     return {
       opacity: withDelay(0, withSpring(footerShow.value ? 1 : 0)),
@@ -86,97 +92,104 @@ export default function VideoView(props: props) {
       ],
     };
   });
-  const videoAnimatedStyle = useAnimatedStyle(()=>{
+  const videoAnimatedStyle = useAnimatedStyle(() => {
     return {
-      width:withTiming(videoWidth.value),
-      height:withTiming(videoHeight.value)
-    }
-  })
-  //底部组件
-  const renderFooter = useMemo(() => {
-    const toFullScreen = () => {
-      navigation.navigate('全屏视频', {
-        source: source,
-        paused: pausedState,
-        currentTime: currentTime,
-        fullTime: allTimeData.seekableDuration,
-        id: props.id,
-      });
-      setPausedState(true)
+      transform: [{translateY: withTiming(videoTransY.value)}],
     };
+  });
+  //底部组件
+  const toFullScreen = useCallback(() => {
+    videoTransY.value =style.DeviceHeight / 2 - (style.DeviceWidth * (9 / 16)) / 2;
+    
+    navigation.push('全屏视频', {
+      source: source,
+      paused: pausedState,
+      currentTime: currentTime,
+      fullTime: allTimeData.seekableDuration,
+      id: props.id,
+    });
+    setPausedState(true);
+  },[currentTime,paused,fullTime]);
+  const renderFooter = useMemo(() => {
     return (
-      <LinearGradient
-        colors={['rgba(255,255,255,0)', 'rgba(0,0,0,0.5)']}
-        style={{
-          width: '100%',
-        }}>
-        <Animated.View style={[styles.footerBox, footerAnimatedStyle]}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              setPausedState(!pausedState);
-            }}>
-            <FastImage
-              source={
-                pausedState
-                  ? imageUrl.video.startFooter
-                  : imageUrl.video.pausedFooter
-              }
-              style={{
-                width: 30,
-                height: 30,
-              }}></FastImage>
-          </TouchableWithoutFeedback>
-          {/*进度条组件 */}
+      <Animated.View style={[footerAnimatedStyle]}>
+        <LinearGradient
+          colors={['rgba(255,255,255,0)', 'rgba(0,0,0,0.1)']}
+          style={{
+            width: '100%',
+          }}>
+          <View style={[styles.footerBox]}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setPausedState(!pausedState);
+              }}>
+              <FastImage
+                source={
+                  pausedState
+                    ? imageUrl.video.startFooter
+                    : imageUrl.video.pausedFooter
+                }
+                style={{
+                  width: 30,
+                  height: 30,
+                }}></FastImage>
+            </TouchableWithoutFeedback>
+            {/*进度条组件 */}
 
-          <SliderBar
-            currentTimeState={currentTime}
-            allTime={allTimeData}
-            setVideoTime={setVideoTimeMySet}></SliderBar>
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => {
-              //组件渲染即可
-              setIsOpenVoice(!isOpenVoice);
-            }}>
-            <Voice isOpenVoice={isOpenVoice}></Voice>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toFullScreen}>
-            <FastImage
-              source={imageUrl.video.fullScreen}
-              style={{
-                width: 30,
-                height: 30,
-              }}></FastImage>
-          </TouchableOpacity>
-          {/*全屏控件*/}
-        </Animated.View>
-      </LinearGradient>
+            <SliderBar
+              currentTimeState={currentTime}
+              allTime={allTimeData}
+              setVideoTime={setVideoTimeMySet}></SliderBar>
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={() => {
+                //组件渲染即可
+                setIsOpenVoice(!isOpenVoice);
+              }}>
+              <Voice isOpenVoice={isOpenVoice}></Voice>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toFullScreen}>
+              <FastImage
+                source={imageUrl.video.fullScreen}
+                style={{
+                  width: 30,
+                  height: 30,
+                }}></FastImage>
+            </TouchableOpacity>
+            {/*全屏控件*/}
+          </View>
+        </LinearGradient>
+      </Animated.View>
     );
   }, [footerShow, pausedState, currentTime, allTimeData, isOpenVoice]);
 
   //顶部组件
   const renderNav = useMemo(() => {
     return (
-      <LinearGradient
-        colors={['rgba(0,0,0,0.5)', 'rgba(255,255,255,0)']}
-        style={{
-          width: '100%',
-        }}>
-        <Animated.View style={[naVAnimatedStyle, styles.bottomBox]}>
-          <FastImage
-            source={imageUrl.common.back}
-            style={{
-              width: 30,
-              height: 30,
-            }}></FastImage>
-          <FastImage
-            source={imageUrl.common.option}
-            style={{
-              width: 30,
-              height: 30,
-            }}></FastImage>
-        </Animated.View>
-      </LinearGradient>
+      <Animated.View style={[naVAnimatedStyle,{
+        width:"100%",
+      }]}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.1)', 'rgba(255,255,255,0)']}
+          style={{
+            width: '100%',
+          }}>
+          <View style={[styles.bottomBox]}>
+            <FastImage
+              source={imageUrl.common.back}
+              style={{
+                width: 30,
+                height: 30,
+              }}></FastImage>
+            <FastImage
+              source={imageUrl.common.option}
+              style={{
+                width: 30,
+                height: 30,
+              }}></FastImage>
+          </View>
+        </LinearGradient>
+      </Animated.View>
     );
   }, []);
 
@@ -187,27 +200,32 @@ export default function VideoView(props: props) {
         footerShow.value = !footerShow.value;
       }}>
       <Animated.View style={styles.box}>
-        <Animated.View style={[videoAnimatedStyle,styles.videoAnimatedBox]}>
-          <Video
-            paused={pausedState}
-            source={source}
-            style={styles.videoBox}
-            onLoad={(event: any) => {
-              setAllTimeData(() => {
-                return {
-                  playableDuration: event.duration,
-                  seekableDuration: event.duration,
-                };
-              });
-            }}
-            onProgress={(event: videoTime) => {
-              setCurrentTime(() => {
-                return event.currentTime;
-              });
-            }}
-            muted={!isOpenVoice}
-            ref={videoRef}
-            currentPlaybackTime={currentTime}></Video>
+        <Animated.View
+          style={[styles.videoAnimatedBox]}
+          sharedTransitionTag="video">
+          <Animated.View
+            style={[styles.videoTranslateYView, videoAnimatedStyle]}>
+            <Video
+              paused={pausedState}
+              source={source}
+              style={styles.videoBox}
+              onLoad={(event: any) => {
+                setAllTimeData(() => {
+                  return {
+                    playableDuration: event.duration,
+                    seekableDuration: event.duration,
+                  };
+                });
+              }}
+              onProgress={(event: videoTime) => {
+                setCurrentTime(() => {
+                  return event.currentTime;
+                });
+              }}
+              muted={!isOpenVoice}
+              ref={videoRef}
+              currentPlaybackTime={currentTime}></Video>
+          </Animated.View>
         </Animated.View>
         <View
           style={{
@@ -225,15 +243,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
-  videoAnimatedBox:{
-    justifyContent:"center",
-    alignItems:"center",
-    backgroundColor:"black"
-  },
-  videoBox: {
-    width: "100%",
-    height: style.DeviceWidth * (9 / 16),
+  videoAnimatedBox: {
     backgroundColor: 'black',
+    height: style.DeviceWidth * (9 / 16),
+  },
+  videoTranslateYView: {},
+  videoBox: {
+    width: '100%',
+    height: style.DeviceWidth * (9 / 16),
   },
   upOnVideoBox: {
     position: 'absolute',

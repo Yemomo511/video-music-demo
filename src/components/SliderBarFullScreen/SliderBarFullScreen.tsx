@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Slider from '@react-native-community/slider';
-import style from 'common/style';
+import style from '../../common/style';
 import imageUrl from '../../image/image';
 export default function SliderBarFullScreen({
     currentTimeState,
@@ -50,7 +50,6 @@ export default function SliderBarFullScreen({
         minimumTrackTintColor={"pink"}
         >
         </Slider>
-       
     </View>
   )
 }

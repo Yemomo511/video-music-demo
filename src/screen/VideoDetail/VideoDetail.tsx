@@ -8,15 +8,16 @@ import { Text, Touchable } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from 'react-native-orientation';
 import { useFocusEffect } from '@react-navigation/native';
-export default function VideoDetail({route}: {route: any}) {
+function VideoDetail({route}: {route: any}) {
   const {storyList,addStory,removeStory,clearStory} = useStoryStore((state)=>state)
   
   useEffect(()=>{
-    console.log(storyList)
+
+    
   },[storyList])
-  useFocusEffect(()=>{
-    Orientation.lockToPortrait()
-  })
+  // useFocusEffect(()=>{
+  //   Orientation.lockToPortrait()
+  // })
   if (!route.params) {
     return (
       <SafeAreaView>
@@ -42,9 +43,9 @@ export default function VideoDetail({route}: {route: any}) {
       </SafeAreaView>
     );
   }
-  const {currentTime, fullTime, paused, id} = route.params;
+  const {currentTime, fullTime, paused,id} = route.params;
   return (
-    <SafeAreaView>
+
         <Animated.View>
           <VideoView
             source={mp4}
@@ -54,6 +55,6 @@ export default function VideoDetail({route}: {route: any}) {
             currentTime={currentTime}
             fullTime={fullTime}></VideoView>
         </Animated.View>
-    </SafeAreaView>
   );
 }
+export default VideoDetail;

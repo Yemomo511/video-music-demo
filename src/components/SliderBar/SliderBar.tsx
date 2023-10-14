@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Slider from '@react-native-community/slider';
-import style from 'common/style';
+import style from '../../common/style';
 import imageUrl from '../../image/image';
 export default function SliderBar({
     currentTimeState,
@@ -17,7 +17,7 @@ export default function SliderBar({
 }) {
     const progressValue = useMemo(()=>{
         return currentTimeState/allTime.seekableDuration
-    },[currentTimeState])
+    },[currentTimeState,allTime])
     const onSliderChange = (event:any)=>{
         setVideoTime(event*allTime.seekableDuration)
     }

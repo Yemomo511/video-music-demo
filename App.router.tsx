@@ -6,39 +6,38 @@
  */
 
 import React, { useEffect } from 'react';
-import {SafeAreaView, StyleSheet, useColorScheme} from 'react-native';
+import { Platform, StyleSheet, UIManager, useColorScheme,SafeAreaView} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import VideoView from './src/components/VideoView/VideoView';
-import mp4 from './src/assets/app.mp4';
 import {gestureHandlerRootHOC} from 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import VideoDetail from './src/screen/VideoDetail/VideoDetail';
-import { createSharedElementStackNavigator } from 'react-navigation-shared-element';
-
 import VideoFullScreen from './src/screen/VideoFullScreen/VideoFullScreen';
 import Orientation from 'react-native-orientation';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
+  //增加自动切换视图的动画配置
+  useEffect(()=>{
+    if (Platform.OS === 'android') {
+      if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }
+    Orientation.lockToPortrait()
+
+  },[])
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const {Navigator, Screen} = createNativeStackNavigator();
-  // const {Navigator, Screen} = createSharedElementStackNavigator();
-  //初始时竖向锁定
-  useEffect(()=>{
-    Orientation.lockToPortrait()
-  },[])
+  // const {Navigator,Screen} = createSharedElementStackNavigator()
   return (
-    <NavigationContainer onStateChange={(state:any)=>{
-      
-      if (state.routeNames[state.index]=="全屏视频") {
-        console.log("start")
-        Orientation.lockToLandscape()
-      }
+    <SafeAreaView style={{
+      flex:1,
     }}>
-      <Navigator initialRouteName="视频详细">
+    <NavigationContainer >
+      <Navigator initialRouteName="视频详细" >
         <Screen
           name="视频详细"
           component={VideoDetail}
@@ -50,14 +49,12 @@ function App(): JSX.Element {
           component={VideoFullScreen}
           options={{
             headerShown: false,
-            gestureDirection:"vertical",
+            gestureDirection:"vertical"
           }}
           ></Screen>
       </Navigator>
     </NavigationContainer>
-    // <SafeAreaView style={backgroundStyle}>
-    //   <VideoViewFullscreen source={mp4} paused={true} title={"飞书会议"}></VideoViewFullscreen>
-    // </SafeAreaView>
+    </SafeAreaView>
   );
 }
 

@@ -17,6 +17,7 @@
     "@react-native-community/slider": "^4.4.3",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/native-stack": "^6.9.14",
+    "@react-navigation/stack": "^6.3.18",
     "antd-mobile-rn": "^2.3.3",
     "babel-plugin-import": "^1.13.8",
     "immer": "^10.0.3",

@@ -4,7 +4,8 @@ import VideoViewFullscreen from '../../components/VideoViewFullscreen/VideoViewF
 import mp4 from '../../assets/app.mp4';
 import Animated from 'react-native-reanimated';
 import Orientation from 'react-native-orientation';
-export default function VideoFullScreen({route}: {route: any}) {
+import { useFocusEffect } from '@react-navigation/native';
+export default function VideoFullScreenComponent({route}: {route: any}) {
   const {currentTime, fullTime, paused, id} = route.params;
   return (
     <SafeAreaView>
