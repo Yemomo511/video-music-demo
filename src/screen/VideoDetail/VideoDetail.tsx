@@ -6,7 +6,7 @@ import Animated from 'react-native-reanimated';
 import { useStoryStore ,StoryType} from '../../store/modules/story';
 import { Text, Touchable } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Orientation from 'react-native-orientation';
+import Orientation from 'react-native-orientation-locker';
 import { useFocusEffect } from '@react-navigation/native';
 function VideoDetail({route}: {route: any}) {
   const {storyList,addStory,removeStory,clearStory} = useStoryStore((state)=>state)

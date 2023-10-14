@@ -1,14 +1,15 @@
 import { stateFactory } from "../utils/factory";
 import { Dimensions } from 'react-native';
 interface deviceType {
-    deviceWidth: number,
-    deviceHeight: number,
+    orientation: 'portrait' | 'landscape',
 }
 const initState = {
-    deviceWidth: Dimensions.get('window').width,
-    deviceHeight: Dimensions.get('window').height,
+    orientation: 'portrait' as 'portrait' | 'landscape',
 }
-export const useDeviceStore = stateFactory(initState,(set)=>{
+interface api {
+    setState: (newState: deviceType) => void,
+}
+export const useDeviceStore = stateFactory<deviceType,api>(initState,(set)=>{
     return{
         setState:(newState:deviceType)=>{
             set((state)=>({

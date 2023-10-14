@@ -9,6 +9,7 @@ const imageUrl = {
         voiceClose:require("../../images/video/voiceClose.webp"),
         messageOpen:require("../../images/video/messageOpen.webp"),
         messageClose:require("../../images/video/messageClose.webp"),
+        horizonFull: require ("../../images/video/horizonFull.webp")
 
     },
     common:{

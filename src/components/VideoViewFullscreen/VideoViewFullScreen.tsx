@@ -21,10 +21,11 @@ import Animated, {
 import Video from 'react-native-video';
 import SliderBar from '../SliderBarFullScreen/SliderBarFullScreen';
 import LinearGradient from 'react-native-linear-gradient';
-import Voice from '../Voice/Voice';
+import Voice from '../../IconComponent/Voice/Voice';
 import {TextInput} from 'react-native-gesture-handler';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {shareVideoTrans} from '../../shareTransition/shareTransition';
+import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScreenVertical';
 interface props {
   source: string;
   paused: boolean;
@@ -65,18 +66,18 @@ export default function VideoViewFullscreen(props: props) {
   useEffect(() => {
     setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
     setPausedState(paused);
-    setAllTimeData(()=>{
+    setAllTimeData(() => {
       return {
         playableDuration: fullTime == undefined ? 0 : fullTime,
         seekableDuration: fullTime == undefined ? 0 : fullTime,
-      }
-    })
-  }, [paused,currentTimePass,fullTime]);
+      };
+    });
+  }, [paused, currentTimePass, fullTime]);
   useEffect(() => {
     if (videoRef?.current?.seek != undefined) {
       videoRef?.current?.seek(videoTimeMySet);
     }
-    setCurrentTime(()=>videoTimeMySet);
+    setCurrentTime(() => videoTimeMySet);
   }, [videoTimeMySet]);
 
   // useFocusEffect(()=>{
@@ -107,13 +108,14 @@ export default function VideoViewFullscreen(props: props) {
     return {
       transform: [
         {
-          translateY: withTiming(offsetY.value)
-        }],
+          translateY: withTiming(offsetY.value),
+        },
+      ],
     };
   });
   const toDetailScreen = useCallback(() => {
     offsetY.value = 0;
-    navigation.push("视频详细",{
+    navigation.push('视频详细', {
       source: source,
       paused: pausedState,
       currentTime: currentTime,
@@ -121,7 +123,7 @@ export default function VideoViewFullscreen(props: props) {
       id: props.id,
     });
     setPausedState(true);
-  },[currentTime,paused,fullTime]);
+  }, [currentTime, paused, fullTime]);
   //底部组件
   const renderFooter = useMemo(() => {
     return (
@@ -178,31 +180,21 @@ export default function VideoViewFullscreen(props: props) {
               style={{
                 backgroundColor: 'rgba(255,255,255,0.6)',
                 borderRadius: 1000,
-                flexDirection:"row",
-                flex:1,
+                flexDirection: 'row',
+                flex: 1,
                 height: 40,
                 paddingLeft: 10,
               }}
               selectionColor={'pink'}
               placeholder="发个弹幕记录一下当下"
               placeholderTextColor={'rgba(0,0,0,0.7)'}></TextInput>
-
-            <TouchableOpacity
-              activeOpacity={1}
+            <Voice
+              isOpenVoice={isOpenVoice}
               onPress={() => {
                 //组件渲染即可
                 setIsOpenVoice(!isOpenVoice);
-              }}>
-              <Voice isOpenVoice={isOpenVoice}></Voice>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toDetailScreen}>
-              <FastImage
-                source={imageUrl.video.fullScreen}
-                style={{
-                  width: 40,
-                  height: 40,
-                }}></FastImage>
-            </TouchableOpacity>
+              }}></Voice>
+            <FullScreenVertical onPress={toDetailScreen}></FullScreenVertical>
           </View>
           {/*全屏控件*/}
         </LinearGradient>
@@ -220,20 +212,21 @@ export default function VideoViewFullscreen(props: props) {
   //顶部组件
   const renderNav = useMemo(() => {
     return (
-      <Animated.View style={[naVAnimatedStyle, {
-        flex:1,
-        width:"100%",
-        
-      }]}>
+      <Animated.View
+        style={[
+          naVAnimatedStyle,
+          {
+            flex: 1,
+            width: '100%',
+          },
+        ]}>
         <LinearGradient
           colors={['rgba(255,255,255,0.1)', 'rgba(255,255,255,0)']}
           style={{
             width: '100%',
             borderRadius: 2,
           }}>
-          <View style={[
-            styles.bottomBox
-          ]}>
+          <View style={[styles.bottomBox]}>
             <TouchableOpacity onPress={toDetailScreen}>
               <FastImage
                 source={imageUrl.common.back}
@@ -253,10 +246,7 @@ export default function VideoViewFullscreen(props: props) {
         </LinearGradient>
       </Animated.View>
     );
-  }, [footerShow,
-    pausedState,
-    currentTime,
-    allTimeData]);
+  }, [footerShow, pausedState, currentTime, allTimeData]);
 
   //整体渲染
   return (
@@ -321,8 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     height: style.DeviceHeight,
   },
-  videoTranslateYView: {
-  },
+  videoTranslateYView: {},
   videoBox: {
     width: '100%',
     height: style.DeviceWidth * (9 / 16),

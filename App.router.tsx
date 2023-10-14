@@ -13,10 +13,11 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import VideoDetail from './src/screen/VideoDetail/VideoDetail';
 import VideoFullScreen from './src/screen/VideoFullScreen/VideoFullScreen';
-import Orientation from 'react-native-orientation';
+import Orientation from 'react-native-orientation-locker';
+import { useDeviceStore } from './src/store/modules/device';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
+  const orientation = useDeviceStore((state)=>state.orientation)
   //增加自动切换视图的动画配置
   useEffect(()=>{
     if (Platform.OS === 'android') {
@@ -25,13 +26,11 @@ function App(): JSX.Element {
       }
     }
     Orientation.lockToPortrait()
-
   },[])
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const {Navigator, Screen} = createNativeStackNavigator();
-  // const {Navigator,Screen} = createSharedElementStackNavigator()
   return (
     <SafeAreaView style={{
       flex:1,
@@ -49,7 +48,6 @@ function App(): JSX.Element {
           component={VideoFullScreen}
           options={{
             headerShown: false,
-            gestureDirection:"vertical"
           }}
           ></Screen>
       </Navigator>

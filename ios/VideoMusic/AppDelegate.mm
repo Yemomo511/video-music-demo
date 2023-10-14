@@ -1,7 +1,6 @@
 #import "AppDelegate.h"
-#import "Orientation.h"
 #import <React/RCTBundleURLProvider.h>
-
+#import "Orientation.h"
 @implementation AppDelegate
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
