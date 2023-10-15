@@ -26,6 +26,8 @@ import {TextInput} from 'react-native-gesture-handler';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {shareVideoTrans} from '../../shareTransition/shareTransition';
 import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScreenVertical';
+import Pause from '../../IconComponent/Pause/Pause';
+import MessageSwitch from '../../IconComponent/MessageSwitch/MessageSwitch';
 interface props {
   source: string;
   paused: boolean;
@@ -145,36 +147,12 @@ export default function VideoViewFullscreen(props: props) {
             setVideoTime={setVideoTimeMySet}></SliderBar>
           <View style={styles.footerBox}>
             {/*暂停与开始 */}
-            <TouchableWithoutFeedback
-              onPress={() => {
-                setPausedState(!pausedState);
-              }}>
-              <FastImage
-                source={
-                  pausedState
-                    ? imageUrl.video.startFooter
-                    : imageUrl.video.pausedFooter
-                }
-                style={{
-                  width: 40,
-                  height: 40,
-                }}></FastImage>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                setIsOpenMessage(!isOpenMessage);
-              }}>
-              <FastImage
-                source={
-                  isOpenMessage
-                    ? imageUrl.video.messageOpen
-                    : imageUrl.video.messageClose
-                }
-                style={{
-                  width: 40,
-                  height: 40,
-                }}></FastImage>
-            </TouchableWithoutFeedback>
+            <Pause onPress={()=>{
+              setPausedState(!pausedState)
+            }} paused={pausedState}></Pause>
+            <MessageSwitch onPress={()=>{
+              setIsOpenMessage(!isOpenMessage)
+            }} isOpen={isOpenMessage}></MessageSwitch>
             {/*弹幕输入框 */}
             <TextInput
               style={{

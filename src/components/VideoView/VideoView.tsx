@@ -1,7 +1,10 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {
+  KeyboardAvoidingView,
   LayoutAnimation,
+  Platform,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -20,11 +23,14 @@ import Animated, {
 import { useDeviceStore } from '../../store/modules/device';
 import Orientation from "react-native-orientation-locker"
 import SliderBar from '../SliderBar/SliderBar';
+import SliderBarFullScreen from '../SliderBarFullScreen/SliderBarFullScreen';
 import LinearGradient from 'react-native-linear-gradient';
 import Voice from '../../IconComponent/Voice/Voice';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import FullScreenHorizon from '../../IconComponent/FullScreenHorizon/FullScreenHorizon';
 import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScreenVertical';
+import Pause from '../../IconComponent/Pause/Pause';
+import MessageSwitch from '../../IconComponent/MessageSwitch/MessageSwitch';
 interface props {
   source: string;
   paused: boolean;
@@ -42,6 +48,8 @@ export default function VideoView(props: props) {
   const {source, paused, currentTime: currentTimePass, fullTime} = props;
   const navigation: any = useNavigation();
   const {setState:setDeviceState,orientation} = useDeviceStore((state)=>state)
+
+  //state
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
@@ -56,12 +64,15 @@ export default function VideoView(props: props) {
     currentTimePass == undefined ? 0 : currentTimePass,
   );
   const [isOpenVoice, setIsOpenVoice] = useState(true);
+  const [videoState,setVideoState ] = useState([style.DeviceWidth,style.DeviceWidth * (9/16)])
   const videoRef: any = useRef();
+  const [isOpenMessage,setIsOpenMessage] = useState(true)
+  //shareValue
   const footerShow = useSharedValue<boolean>(false);
   const videoTransY = useSharedValue<number>(0);
   const videoHeight = useSharedValue<number>(style.DeviceWidth * (9 / 16));
   const videoWidth = useSharedValue<number>(style.DeviceWidth);
-  const [videoState,setVideoState ] = useState([style.DeviceWidth,style.DeviceWidth * (9/16)])
+
   useEffect(() => {
     setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
     setAllTimeData(() => {
@@ -72,6 +83,7 @@ export default function VideoView(props: props) {
     });
     setPausedState(paused);
   }, [paused, currentTimePass, fullTime]);
+
   useEffect(() => {
     if (videoRef?.current?.seek != undefined) {
       videoRef?.current?.seek(videoTimeMySet);
@@ -123,27 +135,28 @@ export default function VideoView(props: props) {
     });
     setPausedState(true);
   }, [currentTime, paused, fullTime]);
+
   const toHorizon = useCallback(()=>{
     videoWidth.value = style.DeviceHeight,
       videoHeight.value = style.DeviceWidth,
       setVideoState([style.DeviceHeight,style.DeviceWidth])
-      console.log("toHorizon")
       setDeviceState({
         orientation:"landscape"
       })   
       Orientation.lockToLandscape()
   },[videoHeight,videoWidth,setVideoState])
+
   const toPortrait = useCallback(()=>{
     videoWidth.value = style.DeviceWidth,
       videoHeight.value = style.DeviceWidth * (9 / 16),
       setVideoState([style.DeviceWidth,style.DeviceWidth * (9 / 16)])
-      console.log("toPortrait")
       setDeviceState({
         orientation:"portrait"
       })   
       Orientation.lockToPortrait()
   },[])
-    //底部组件
+
+  //底部组件
   const renderFooter = useMemo(() => {
     return (
       <Animated.View style={[footerAnimatedStyle]}>
@@ -153,21 +166,9 @@ export default function VideoView(props: props) {
             width: '100%',
           }}>
           <View style={[styles.footerBox]}>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                setPausedState(!pausedState);
-              }}>
-              <FastImage
-                source={
-                  pausedState
-                    ? imageUrl.video.startFooter
-                    : imageUrl.video.pausedFooter
-                }
-                style={{
-                  width: 30,
-                  height: 30,
-                }}></FastImage>
-            </TouchableWithoutFeedback>
+            <Pause onPress={()=>{
+              setPausedState(!pausedState);
+            }} paused={pausedState}></Pause>
             {/*进度条组件 */}
             <SliderBar
               currentTimeState={currentTime}
@@ -188,6 +189,70 @@ export default function VideoView(props: props) {
     );
   }, [footerShow, pausedState, currentTime, allTimeData, isOpenVoice,orientation]);
 
+  //全屏横屏底部组件
+  const renderFooterFull = useMemo(() => {
+    return (
+      <Animated.View
+        style={[
+          footerAnimatedStyle,
+          {
+            justifyContent: 'flex-end',
+          },
+        ]}>
+        <LinearGradient
+          colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.1)']}
+          style={{
+            width: '100%',
+          }}>
+          <SliderBarFullScreen
+            style={{
+              width:style.DeviceHeight -20
+            }}
+            currentTimeState={currentTime}
+            allTime={allTimeData}
+            setVideoTime={setVideoTimeMySet}></SliderBarFullScreen>
+          <View style={styles.footerBox}>
+            {/*暂停与开始 */}
+            <Pause onPress={()=>{
+              setPausedState(!pausedState)
+            }} paused={pausedState}></Pause>
+            <MessageSwitch onPress={()=>{
+              setIsOpenMessage(!isOpenMessage)
+            }} isOpen={isOpenMessage}></MessageSwitch>
+            {/*弹幕输入框 */}
+            <TextInput
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                borderRadius: 1000,
+                flexDirection: 'row',
+                flex: 1,
+                height: 40,
+                paddingLeft: 10,
+              }}
+              selectionColor={'pink'}
+              placeholder="发个弹幕记录一下当下"
+              placeholderTextColor={'rgba(0,0,0,0.7)'}></TextInput>
+            <Voice
+              isOpenVoice={isOpenVoice}
+              onPress={() => {
+                //组件渲染即可
+                setIsOpenVoice(!isOpenVoice);
+              }}></Voice>
+              <FullScreenHorizon onPress={orientation !== "landscape"?toHorizon:toPortrait}></FullScreenHorizon>
+          </View>
+          {/*全屏控件*/}
+        </LinearGradient>
+      </Animated.View>
+    );
+  }, [
+    footerShow,
+    pausedState,
+    currentTime,
+    allTimeData,
+    isOpenVoice,
+    isOpenMessage,
+    orientation
+  ]);
   //顶部组件
   const renderNav = useMemo(() => {
     return (
@@ -268,7 +333,15 @@ export default function VideoView(props: props) {
             ...styles.upOnVideoBox,
           }}>
           {renderNav}
-          {renderFooter}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{
+              width: '100%',
+              position: 'absolute',
+              bottom: 0,
+            }}>
+          {orientation == "landscape"?renderFooterFull:renderFooter}
+          </KeyboardAvoidingView>
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
@@ -302,8 +375,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     padding: 10,
+    paddingTop: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
+    columnGap:10,
   },
   bottomBox: {
     padding: 10,

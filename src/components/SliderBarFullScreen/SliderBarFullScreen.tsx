@@ -1,13 +1,15 @@
 import React, { useMemo } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleProp, StyleSheet, Text, View, ViewComponent, ViewStyle } from 'react-native'
 import Slider from '@react-native-community/slider';
 import style from '../../common/style';
 import imageUrl from '../../image/image';
 export default function SliderBarFullScreen({
+    style={},
     currentTimeState,
     allTime,
     setVideoTime,
 }:{
+    style?: StyleProp<ViewStyle>
     currentTimeState:number,
     allTime:{
         playableDuration: number;
@@ -45,7 +47,7 @@ export default function SliderBarFullScreen({
         value={progressValue} 
         onValueChange={onSliderChange}
         tapToSeek={true}
-        style={styles.slider}
+        style={[styles.slider,style]}
         thumbImage={imageUrl.video.bilibili}
         minimumTrackTintColor={"pink"}
         >

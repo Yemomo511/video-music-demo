@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         alignItems:"center",
     },
     slider:{
-        width:(style.DeviceWidth-100)*0.5,
+        width:(style.DeviceWidth-100)*0.4,
         height:20,
     }
 })
