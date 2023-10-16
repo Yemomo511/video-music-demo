@@ -232,7 +232,8 @@ export default function VideoViewFullscreen(props: props) {
       onPress={() => {
         footerShow.value = !footerShow.value;
       }}>
-      <Animated.View style={styles.box}>
+      <Animated.View style={[styles.box,{
+      }]}>
         <Animated.View
           style={[styles.videoAnimatedView]}
           sharedTransitionTag="video">

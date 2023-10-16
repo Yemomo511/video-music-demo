@@ -4,7 +4,7 @@ import VideoView from '../../components/VideoView/VideoView';
 import mp4 from '../../assets/app.mp4';
 import Animated from 'react-native-reanimated';
 import { useStoryStore ,StoryType} from '../../store/modules/story';
-import { Text, Touchable } from 'react-native';
+import { StatusBar, Text, Touchable, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Orientation from 'react-native-orientation-locker';
 import { useFocusEffect } from '@react-navigation/native';
@@ -20,7 +20,7 @@ function VideoDetail({route}: {route: any}) {
   // })
   if (!route.params) {
     return (
-      <SafeAreaView>
+      <View>
         <VideoView
           source={mp4}
           paused={true}
@@ -40,12 +40,11 @@ function VideoDetail({route}: {route: any}) {
           }}>
             <Text>清除所有浏览记录</Text>
           </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     );
   }
   const {currentTime, fullTime, paused,id} = route.params;
   return (
-
         <Animated.View>
           <VideoView
             source={mp4}

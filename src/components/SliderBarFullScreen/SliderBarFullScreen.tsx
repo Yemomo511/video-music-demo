@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         padding:10,
     },
     slider:{
-        width:(style.DeviceWidth-20),
+        width:(style.DeviceWidth-40),
         height:20,
     }
 })

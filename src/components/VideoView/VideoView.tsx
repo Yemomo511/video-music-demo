@@ -3,6 +3,7 @@ import {
   KeyboardAvoidingView,
   LayoutAnimation,
   Platform,
+  StatusBar,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -20,8 +21,8 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useDeviceStore } from '../../store/modules/device';
-import Orientation from "react-native-orientation-locker"
+import {useDeviceStore} from '../../store/modules/device';
+import Orientation from 'react-native-orientation-locker';
 import SliderBar from '../SliderBar/SliderBar';
 import SliderBarFullScreen from '../SliderBarFullScreen/SliderBarFullScreen';
 import LinearGradient from 'react-native-linear-gradient';
@@ -31,6 +32,7 @@ import FullScreenHorizon from '../../IconComponent/FullScreenHorizon/FullScreenH
 import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScreenVertical';
 import Pause from '../../IconComponent/Pause/Pause';
 import MessageSwitch from '../../IconComponent/MessageSwitch/MessageSwitch';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 interface props {
   source: string;
   paused: boolean;
@@ -47,8 +49,10 @@ interface videoTime {
 export default function VideoView(props: props) {
   const {source, paused, currentTime: currentTimePass, fullTime} = props;
   const navigation: any = useNavigation();
-  const {setState:setDeviceState,orientation} = useDeviceStore((state)=>state)
-
+  const {setState: setDeviceState, orientation} = useDeviceStore(
+    state => state,
+  );
+  const {top} = useSafeAreaInsets();
   //state
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
@@ -64,9 +68,12 @@ export default function VideoView(props: props) {
     currentTimePass == undefined ? 0 : currentTimePass,
   );
   const [isOpenVoice, setIsOpenVoice] = useState(true);
-  const [videoState,setVideoState ] = useState([style.DeviceWidth,style.DeviceWidth * (9/16)])
+  const [videoState, setVideoState] = useState([
+    style.DeviceWidth,
+    style.DeviceWidth * (9 / 16),
+  ]);
   const videoRef: any = useRef();
-  const [isOpenMessage,setIsOpenMessage] = useState(true)
+  const [isOpenMessage, setIsOpenMessage] = useState(true);
   //shareValue
   const footerShow = useSharedValue<boolean>(false);
   const videoTransY = useSharedValue<number>(0);
@@ -116,12 +123,12 @@ export default function VideoView(props: props) {
       transform: [{translateY: withTiming(videoTransY.value)}],
     };
   });
-  const videoHorizonStyle = useAnimatedStyle(()=>{
+  const videoHorizonStyle = useAnimatedStyle(() => {
     return {
-      width:withTiming(videoWidth.value),
-      height:withTiming(videoHeight.value)
-    }
-  })
+      width: withTiming(videoWidth.value),
+      height: withTiming(videoHeight.value),
+    };
+  });
 
   const toFullScreen = useCallback(() => {
     videoTransY.value =
@@ -136,25 +143,27 @@ export default function VideoView(props: props) {
     setPausedState(true);
   }, [currentTime, paused, fullTime]);
 
-  const toHorizon = useCallback(()=>{
-    videoWidth.value = style.DeviceHeight,
-      videoHeight.value = style.DeviceWidth,
-      setVideoState([style.DeviceHeight,style.DeviceWidth])
-      setDeviceState({
-        orientation:"landscape"
-      })   
-      Orientation.lockToLandscape()
-  },[videoHeight,videoWidth,setVideoState])
+  const toHorizon = useCallback(() => {
+    StatusBar.setHidden(true);
+    (videoWidth.value = style.DeviceHeight),
+      (videoHeight.value = style.DeviceWidth),
+      setVideoState([style.DeviceHeight, style.DeviceWidth]);
+    setDeviceState({
+      orientation: 'landscape',
+    });
+    Orientation.lockToLandscape();
+  }, [videoHeight, videoWidth, setVideoState]);
 
-  const toPortrait = useCallback(()=>{
-    videoWidth.value = style.DeviceWidth,
-      videoHeight.value = style.DeviceWidth * (9 / 16),
-      setVideoState([style.DeviceWidth,style.DeviceWidth * (9 / 16)])
-      setDeviceState({
-        orientation:"portrait"
-      })   
-      Orientation.lockToPortrait()
-  },[])
+  const toPortrait = useCallback(() => {
+    StatusBar.setHidden(false);
+    (videoWidth.value = style.DeviceWidth),
+      (videoHeight.value = style.DeviceWidth * (9 / 16)),
+      setVideoState([style.DeviceWidth, style.DeviceWidth * (9 / 16)]);
+    setDeviceState({
+      orientation: 'portrait',
+    });
+    Orientation.lockToPortrait();
+  }, []);
 
   //底部组件
   const renderFooter = useMemo(() => {
@@ -166,9 +175,11 @@ export default function VideoView(props: props) {
             width: '100%',
           }}>
           <View style={[styles.footerBox]}>
-            <Pause onPress={()=>{
-              setPausedState(!pausedState);
-            }} paused={pausedState}></Pause>
+            <Pause
+              onPress={() => {
+                setPausedState(!pausedState);
+              }}
+              paused={pausedState}></Pause>
             {/*进度条组件 */}
             <SliderBar
               currentTimeState={currentTime}
@@ -180,14 +191,24 @@ export default function VideoView(props: props) {
                 //组件渲染即可
                 setIsOpenVoice(!isOpenVoice);
               }}></Voice>
-            <FullScreenHorizon onPress={orientation !== "landscape"?toHorizon:toPortrait}></FullScreenHorizon>
+            <FullScreenHorizon
+              onPress={
+                orientation !== 'landscape' ? toHorizon : toPortrait
+              }></FullScreenHorizon>
             <FullScreenVertical onPress={toFullScreen}></FullScreenVertical>
             {/*全屏控件*/}
           </View>
         </LinearGradient>
       </Animated.View>
     );
-  }, [footerShow, pausedState, currentTime, allTimeData, isOpenVoice,orientation]);
+  }, [
+    footerShow,
+    pausedState,
+    currentTime,
+    allTimeData,
+    isOpenVoice,
+    orientation,
+  ]);
 
   //全屏横屏底部组件
   const renderFooterFull = useMemo(() => {
@@ -204,41 +225,53 @@ export default function VideoView(props: props) {
           style={{
             width: '100%',
           }}>
-          <SliderBarFullScreen
+          <View
             style={{
-              width:style.DeviceHeight -20
-            }}
-            currentTimeState={currentTime}
-            allTime={allTimeData}
-            setVideoTime={setVideoTimeMySet}></SliderBarFullScreen>
-          <View style={styles.footerBox}>
-            {/*暂停与开始 */}
-            <Pause onPress={()=>{
-              setPausedState(!pausedState)
-            }} paused={pausedState}></Pause>
-            <MessageSwitch onPress={()=>{
-              setIsOpenMessage(!isOpenMessage)
-            }} isOpen={isOpenMessage}></MessageSwitch>
-            {/*弹幕输入框 */}
-            <TextInput
+              padding: orientation == 'landscape' ? 20 : 10,
+            }}>
+            <SliderBarFullScreen
               style={{
-                backgroundColor: 'rgba(255,255,255,0.6)',
-                borderRadius: 1000,
-                flexDirection: 'row',
-                flex: 1,
-                height: 40,
-                paddingLeft: 10,
+                width: style.DeviceHeight - 40,
               }}
-              selectionColor={'pink'}
-              placeholder="发个弹幕记录一下当下"
-              placeholderTextColor={'rgba(0,0,0,0.7)'}></TextInput>
-            <Voice
-              isOpenVoice={isOpenVoice}
-              onPress={() => {
-                //组件渲染即可
-                setIsOpenVoice(!isOpenVoice);
-              }}></Voice>
-              <FullScreenHorizon onPress={orientation !== "landscape"?toHorizon:toPortrait}></FullScreenHorizon>
+              currentTimeState={currentTime}
+              allTime={allTimeData}
+              setVideoTime={setVideoTimeMySet}></SliderBarFullScreen>
+            <View style={styles.footerBox}>
+              {/*暂停与开始 */}
+              <Pause
+                onPress={() => {
+                  setPausedState(!pausedState);
+                }}
+                paused={pausedState}></Pause>
+              <MessageSwitch
+                onPress={() => {
+                  setIsOpenMessage(!isOpenMessage);
+                }}
+                isOpen={isOpenMessage}></MessageSwitch>
+              {/*弹幕输入框 */}
+              <TextInput
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.6)',
+                  borderRadius: 1000,
+                  flexDirection: 'row',
+                  flex: 1,
+                  height: 40,
+                  paddingLeft: 10,
+                }}
+                selectionColor={'pink'}
+                placeholder="发个弹幕记录一下当下"
+                placeholderTextColor={'rgba(0,0,0,0.7)'}></TextInput>
+              <Voice
+                isOpenVoice={isOpenVoice}
+                onPress={() => {
+                  //组件渲染即可
+                  setIsOpenVoice(!isOpenVoice);
+                }}></Voice>
+              <FullScreenHorizon
+                onPress={
+                  orientation !== 'landscape' ? toHorizon : toPortrait
+                }></FullScreenHorizon>
+            </View>
           </View>
           {/*全屏控件*/}
         </LinearGradient>
@@ -251,7 +284,7 @@ export default function VideoView(props: props) {
     allTimeData,
     isOpenVoice,
     isOpenMessage,
-    orientation
+    orientation,
   ]);
   //顶部组件
   const renderNav = useMemo(() => {
@@ -268,7 +301,13 @@ export default function VideoView(props: props) {
           style={{
             width: '100%',
           }}>
-          <View style={[styles.bottomBox]}>
+          <View
+            style={[
+              styles.bottomBox,
+              {
+                padding: orientation == 'landscape' ? 20 : 10,
+              },
+            ]}>
             <FastImage
               source={imageUrl.common.back}
               style={{
@@ -285,7 +324,7 @@ export default function VideoView(props: props) {
         </LinearGradient>
       </Animated.View>
     );
-  }, []);
+  }, [orientation]);
 
   //整体渲染
   return (
@@ -293,12 +332,23 @@ export default function VideoView(props: props) {
       onPress={() => {
         footerShow.value = !footerShow.value;
       }}>
-      <Animated.View style={styles.box}>
+      <Animated.View
+        style={[
+          styles.box,
+          {
+            marginTop: top,
+          },
+        ]}>
+        <StatusBar hidden={false}/>
         <Animated.View
-          style={[styles.videoAnimatedBox,videoHorizonStyle,{
-            width:videoState[0],
-            height:videoState[1],
-          }]}
+          style={[
+            styles.videoAnimatedBox,
+            videoHorizonStyle,
+            {
+              width: videoState[0],
+              height: videoState[1],
+            },
+          ]}
           sharedTransitionTag="video">
           <Animated.View
             style={[styles.videoTranslateYView, videoAnimatedStyle]}>
@@ -307,8 +357,8 @@ export default function VideoView(props: props) {
               source={source}
               style={{
                 ...styles.videoBox,
-                width:videoState[0],
-                height:videoState[1],
+                width: videoState[0],
+                height: videoState[1],
               }}
               onLoad={(event: any) => {
                 setAllTimeData(() => {
@@ -340,7 +390,7 @@ export default function VideoView(props: props) {
               position: 'absolute',
               bottom: 0,
             }}>
-          {orientation == "landscape"?renderFooterFull:renderFooter}
+            {orientation == 'landscape' ? renderFooterFull : renderFooter}
           </KeyboardAvoidingView>
         </View>
       </Animated.View>
@@ -378,7 +428,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     justifyContent: 'space-between',
     alignItems: 'center',
-    columnGap:10,
+    columnGap: 10,
   },
   bottomBox: {
     padding: 10,
