@@ -22,6 +22,7 @@ import VideoFullScreen from './src/screen/VideoFullScreen/VideoFullScreen';
 import Orientation from 'react-native-orientation-locker';
 import {useDeviceStore} from './src/store/modules/device';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import StatusBar from './src/components/StatusBar/StatusBarBackground';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const orientation = useDeviceStore(state => state.orientation);
@@ -47,12 +48,16 @@ function App(): JSX.Element {
             component={VideoDetail}
             options={{
               headerShown: false,
+              headerStyle:{
+                backgroundColor:"blue"
+              }
             }}></Screen>
           <Screen
             name="全屏视频"
             component={VideoFullScreen}
             options={{
               headerShown: false,
+              
             }}></Screen>
         </Navigator>
       </NavigationContainer>

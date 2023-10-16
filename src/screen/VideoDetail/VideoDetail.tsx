@@ -4,9 +4,9 @@ import VideoView from '../../components/VideoView/VideoView';
 import mp4 from '../../assets/app.mp4';
 import Animated from 'react-native-reanimated';
 import { useStoryStore ,StoryType} from '../../store/modules/story';
-import { StatusBar, Text, Touchable, View } from 'react-native';
+import { Text, Touchable, View ,StatusBar as StatusBarNative} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Orientation from 'react-native-orientation-locker';
+import  StatusBar from "../../components/StatusBar/StatusBarBackground"
 import { useFocusEffect } from '@react-navigation/native';
 function VideoDetail({route}: {route: any}) {
   const {storyList,addStory,removeStory,clearStory} = useStoryStore((state)=>state)
@@ -15,9 +15,6 @@ function VideoDetail({route}: {route: any}) {
 
     
   },[storyList])
-  // useFocusEffect(()=>{
-  //   Orientation.lockToPortrait()
-  // })
   if (!route.params) {
     return (
       <View>
@@ -26,6 +23,7 @@ function VideoDetail({route}: {route: any}) {
           paused={true}
           title="那维莱特"
           id="asd"></VideoView>
+          <StatusBarNative translucent={true} barStyle="light-content"></StatusBarNative>
           <TouchableOpacity onPress={()=>{
             addStory({
                 id:"aaa",

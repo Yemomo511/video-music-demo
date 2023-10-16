@@ -28,6 +28,7 @@ import {shareVideoTrans} from '../../shareTransition/shareTransition';
 import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScreenVertical';
 import Pause from '../../IconComponent/Pause/Pause';
 import MessageSwitch from '../../IconComponent/MessageSwitch/MessageSwitch';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface props {
   source: string;
   paused: boolean;
@@ -45,6 +46,7 @@ interface videoTime {
 export default function VideoViewFullscreen(props: props) {
   const {source, paused, currentTime: currentTimePass, fullTime, id} = props;
   const navigation: any = useNavigation();
+  const inset = useSafeAreaInsets()
   const [pausedState, setPausedState] = useState<boolean>(() => {
     return paused;
   });
@@ -65,6 +67,7 @@ export default function VideoViewFullscreen(props: props) {
   const offsetY = useSharedValue<number>(
     (-style.DeviceWidth * (9 / 16)) / 2 + style.DeviceHeight / 2,
   );
+ 
   useEffect(() => {
     setCurrentTime(currentTimePass == undefined ? 0 : currentTimePass);
     setPausedState(paused);
@@ -231,6 +234,8 @@ export default function VideoViewFullscreen(props: props) {
     <TouchableWithoutFeedback
       onPress={() => {
         footerShow.value = !footerShow.value;
+      }} style={{
+        marginTop:inset.top
       }}>
       <Animated.View style={[styles.box,{
       }]}>

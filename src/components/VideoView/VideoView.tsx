@@ -33,6 +33,7 @@ import FullScreenVertical from '../../IconComponent/FullScreenVertical/FullScree
 import Pause from '../../IconComponent/Pause/Pause';
 import MessageSwitch from '../../IconComponent/MessageSwitch/MessageSwitch';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import StatusBarBackground from '../StatusBar/StatusBarBackground';
 interface props {
   source: string;
   paused: boolean;
@@ -328,6 +329,8 @@ export default function VideoView(props: props) {
 
   //整体渲染
   return (
+    <View>
+    <StatusBarBackground backgroundColor='black' barStyle='light-content'></StatusBarBackground>
     <TouchableWithoutFeedback
       onPress={() => {
         footerShow.value = !footerShow.value;
@@ -335,11 +338,8 @@ export default function VideoView(props: props) {
       <Animated.View
         style={[
           styles.box,
-          {
-            marginTop: top,
-          },
         ]}>
-        <StatusBar hidden={false}/>
+
         <Animated.View
           style={[
             styles.videoAnimatedBox,
@@ -395,6 +395,7 @@ export default function VideoView(props: props) {
         </View>
       </Animated.View>
     </TouchableWithoutFeedback>
+    </View>
   );
 }
 const styles = StyleSheet.create({
