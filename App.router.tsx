@@ -23,6 +23,7 @@ import Orientation from 'react-native-orientation-locker';
 import {useDeviceStore} from './src/store/modules/device';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import StatusBar from './src/components/StatusBar/StatusBarBackground';
+import MusicView from './src/components/MusicView/MusicView';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   const orientation = useDeviceStore(state => state.orientation);
@@ -42,7 +43,7 @@ function App(): JSX.Element {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <Navigator initialRouteName="视频详细">
+        <Navigator initialRouteName="音乐详细">
           <Screen
             name="视频详细"
             component={VideoDetail}
@@ -57,8 +58,13 @@ function App(): JSX.Element {
             component={VideoFullScreen}
             options={{
               headerShown: false,
-              
             }}></Screen>
+          <Screen
+          name="音乐详细"
+          component={MusicView}
+          options={{
+            headerShown:false
+          }}></Screen>
         </Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

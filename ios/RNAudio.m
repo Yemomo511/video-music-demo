@@ -20,6 +20,10 @@
 
 @synthesize _key = _key;
 
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
 //添加监听
 //参考https://developer.apple.com/documentation/avfaudio/responding_to_audio_route_changes?language=objc
 //用处为监听用户的耳机等。根据AVAudioSessionRouteChangeReason来确定音频设备发生变化的原因，并根据与此决定用户行为
@@ -73,13 +77,13 @@
 //获取audio的存储
 - (NSMutableDictionary *)playerPool{
   if (!_playerPool){
-    return [NSMutableDictionary new];
+    _playerPool = [NSMutableDictionary new];
   }
   return _playerPool;
 }
 -(NSMutableDictionary *)callBackPool{
   if (_callbackPool){
-    return [NSMutableDictionary new];
+    _callbackPool =  [NSMutableDictionary new];
   }
   return _callbackPool;
 }
@@ -156,7 +160,42 @@ RCT_EXPORT_METHOD(init:(NSString *)fileName
   NSCharacterSet *allowedCharacters = [NSCharacterSet URLQueryAllowedCharacterSet];
   NSString *fileNameEscaped = [fileName stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
   NSLog(@"%@",fileNameEscaped);
-}
+  if ([fileNameEscaped hasPrefix:@"http"]){
+    fileNameUrl = [NSURL URLWithString:fileNameEscaped];
+    NSURLRequest *request = [NSURLRequest requestWithURL:fileNameUrl];
+    NSURLSession *session = [NSURLSession sharedSession];
+    //目前这里有bug，待进一步处理
+    NSData *data = [NSData dataWithContentsOfURL:fileNameUrl];
+    player = [[AVAudioPlayer alloc] initWithData:data error:&error];
+    }
+  else{
+    fileNameUrl = [NSURL URLWithString:fileNameEscaped];
+    player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileNameUrl error:&error];
+  }
+  if (player){
+    //同步执行
+    @synchronized (self) {
+      //player初始化
+      player.delegate = self;
+      player.enableRate = YES;
+      [player prepareToPlay];
+      [[self playerPool] setObject:player forKey:key];
+      
+      withCallback(@[[NSNull null],
+                     [
+                       NSDictionary dictionaryWithObjectsAndKeys:
+                         [NSNumber numberWithDouble:[player duration]],
+                     @"duration",
+                     [NSNumber numberWithUnsignedLong:[player numberOfChannels]],
+                       @"numberOfChannels",
+                       nil]
+                   ]);
+    }
+  }else{
+      withCallback(@[RCTJSErrorFromNSError(error),[NSNull null]]);
+    }
+  }
+
 
 //默认启动
 RCT_EXPORT_METHOD(enabled:(BOOL) enabled){
@@ -222,7 +261,7 @@ RCT_EXPORT_METHOD(setMode:(NSString *) modeName){
   [audioSession setMode:mode error:nil];
 }
 //播放
-RCT_EXPORT_METHOD(play:(NSNumber *) key withCallBack:(RCTResponseSenderBlock) callBack){
+RCT_EXPORT_METHOD(play:(nonnull NSNumber *) key withCallBack:(RCTResponseSenderBlock) callBack){
   AVAudioSession* audioSession = [AVAudioSession sharedInstance];
   //播放开始时，激活音频设置
   [audioSession setActive:YES error:nil];
@@ -237,6 +276,9 @@ RCT_EXPORT_METHOD(play:(NSNumber *) key withCallBack:(RCTResponseSenderBlock) ca
     //配置他的回调，根据传来的
     [[self callBackPool]setObject:[callBack copy] forKey:key];
     [player play];
+    callBack(@[@"sucess"]);
+  }else{
+    callBack(@[@"no player"]);
   }
 }
 //暂停
