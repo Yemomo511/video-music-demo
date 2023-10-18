@@ -1,6 +1,8 @@
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
 #import "Orientation.h"
+#import "AVFAudio/AVFAudio.h"
+
 @implementation AppDelegate
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
