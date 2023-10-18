@@ -13,8 +13,6 @@ export default function useAudio() {
     LIBRARY:RNAudio.NSLibraryDirectory,
     CACHE:RNAudio.NSCachesDirectory,
   }
-
-  
   useEffect(()=>{
     const url = "walk_grass.mp3"
     let fileName;
@@ -35,6 +33,9 @@ export default function useAudio() {
         console.log("inner")
     })
     RNAudio.enabled(true)
-   
+    RNAudio.play(12,(str:string)=>{
+        console.log(str)
+    })
+    
   },[])
 }

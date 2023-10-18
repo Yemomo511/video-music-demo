@@ -13,6 +13,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		73C85E972ADD2C770092202D /* StatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C85E962ADD2C770092202D /* StatusBarStyle.m */; };
+		73C85EAE2AE02C140092202D /* RNAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C85EAD2AE02C140092202D /* RNAudio.m */; };
+		73C85EB22AE02D070092202D /* walk_grass.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 73C85EB12AE02D060092202D /* walk_grass.mp3 */; };
 		7699B88040F8A987B510C191 /* libPods-VideoMusic-VideoMusicTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-VideoMusic-VideoMusicTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -44,6 +46,9 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-VideoMusic.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VideoMusic.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		73C85E952ADD2C770092202D /* StatusBarStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatusBarStyle.h; sourceTree = "<group>"; };
 		73C85E962ADD2C770092202D /* StatusBarStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusBarStyle.m; sourceTree = "<group>"; };
+		73C85EAC2AE02C140092202D /* RNAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNAudio.h; sourceTree = "<group>"; };
+		73C85EAD2AE02C140092202D /* RNAudio.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNAudio.m; sourceTree = "<group>"; };
+		73C85EB12AE02D060092202D /* walk_grass.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = walk_grass.mp3; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VideoMusic/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-VideoMusic-VideoMusicTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoMusic-VideoMusicTests.release.xcconfig"; path = "Target Support Files/Pods-VideoMusic-VideoMusicTests/Pods-VideoMusic-VideoMusicTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -89,6 +94,8 @@
 		13B07FAE1A68108700A75B9A /* VideoMusic */ = {
 			isa = PBXGroup;
 			children = (
+				73C85EB12AE02D060092202D /* walk_grass.mp3 */,
+				73C85EAB2AE02BAC0092202D /* RNAudio */,
 				73C85E8F2ADD2A440092202D /* StatusBarStyle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
@@ -117,6 +124,15 @@
 				73C85E962ADD2C770092202D /* StatusBarStyle.m */,
 			);
 			path = StatusBarStyle;
+			sourceTree = "<group>";
+		};
+		73C85EAB2AE02BAC0092202D /* RNAudio */ = {
+			isa = PBXGroup;
+			children = (
+				73C85EAC2AE02C140092202D /* RNAudio.h */,
+				73C85EAD2AE02C140092202D /* RNAudio.m */,
+			);
+			name = RNAudio;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -257,7 +273,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				73C85EAA2AE0132F0092202D /* walk_grass.mp3 in Resources */,
+				73C85EB22AE02D070092202D /* walk_grass.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +444,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				73C85E972ADD2C770092202D /* StatusBarStyle.m in Sources */,
+				73C85EAE2AE02C140092202D /* RNAudio.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
