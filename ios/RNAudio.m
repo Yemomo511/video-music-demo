@@ -282,7 +282,7 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber *) key withCallBack:(RCTResponseSenderB
   }
 }
 //暂停
-RCT_EXPORT_METHOD(pause:(NSNumber *) key withCallback:(RCTResponseSenderBlock) callBack){
+RCT_EXPORT_METHOD(pause:(nonnull NSNumber *) key withCallback:(RCTResponseSenderBlock) callBack){
   AVAudioPlayer* player = [self playerForKey:key];
   if (player){
     [player pause];
@@ -291,17 +291,19 @@ RCT_EXPORT_METHOD(pause:(NSNumber *) key withCallback:(RCTResponseSenderBlock) c
   }
 }
 //停止 停止播放并撤消系统播放所需的设置。
-RCT_EXPORT_METHOD(realse:(NSNumber *) key keywithCallback:(RCTResponseSenderBlock) callBack){
+RCT_EXPORT_METHOD(realse:(nonnull NSNumber *) key withCallback:(RCTResponseSenderBlock) callBack){
   AVAudioPlayer* player = [self playerForKey:key];
   if (player){
     [player stop];
     [[self playerPool] removeObjectForKey:key];
     [[self callBackPool] removeObjectForKey:key];
-    
+    //移除监听
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    callBack(@[]);
   }
 }
 
-RCT_EXPORT_METHOD(stop:(NSNumber *)key withCallback:(RCTResponseSenderBlock) callBack){
+RCT_EXPORT_METHOD(stop:(nonnull NSNumber *)key withCallback:(RCTResponseSenderBlock) callBack){
   AVAudioPlayer* player =  [self playerForKey:key];
   if (player){
     [player stop];
