@@ -89,6 +89,7 @@
 }
 //根据key获取player
 -(AVAudioPlayer *) playerForKey:(NSNumber *)key{
+
   return [[self playerPool] objectForKey:key];
 }
 //获取player的key

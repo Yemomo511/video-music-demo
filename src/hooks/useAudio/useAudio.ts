@@ -21,7 +21,7 @@ interface RNAudioType{
     NSCachesDirectory:string
 }
 
-//Audio的所有方法进行封装
+//Audio的所有方法进行封装，AVAudioPlayer只能播放本地音频
 const RNAudio:RNAudioType
  = NativeModules.RNAudio
 type configType = "MAIN_BUNDLE"|"DOCUMENT"|"LIBRARY"|"CACHE"
@@ -74,7 +74,9 @@ export default function useAudio(id:number=0,name:string="",options:any={},confi
     RNAudio.setMode(mode);
   }
 
+
   const basicFunc = {
+    init,
     play,
     pause,
     realse,
