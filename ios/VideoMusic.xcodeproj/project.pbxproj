@@ -52,6 +52,7 @@
 		73C85EB12AE02D060092202D /* walk_grass.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = walk_grass.mp3; sourceTree = "<group>"; };
 		73E949BB2AE21FE00075509F /* RNAudioQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNAudioQueue.h; sourceTree = "<group>"; };
 		73E949BC2AE21FE00075509F /* RNAudioQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RNAudioQueue.m; sourceTree = "<group>"; };
+		73E949C52AE2591C0075509F /* AudioDefine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDefine.h; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VideoMusic/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-VideoMusic-VideoMusicTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoMusic-VideoMusicTests.release.xcconfig"; path = "Target Support Files/Pods-VideoMusic-VideoMusicTests/Pods-VideoMusic-VideoMusicTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -135,6 +136,7 @@
 			children = (
 				73C85EAC2AE02C140092202D /* RNAudio.h */,
 				73C85EAD2AE02C140092202D /* RNAudio.m */,
+				73E949C52AE2591C0075509F /* AudioDefine.h */,
 			);
 			name = RNAudio;
 			sourceTree = "<group>";
@@ -654,6 +656,7 @@
 					"-ld_classic",
 					"-Wl",
 					"-ld_classic",
+					"-Wl -ld_classic ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -730,6 +733,7 @@
 					"-ld_classic",
 					"-Wl",
 					"-ld_classic",
+					"-Wl -ld_classic ",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

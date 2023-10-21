@@ -1,13 +1,16 @@
-import React, { useEffect, useMemo } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import React, { useMemo } from 'react'
+import { StyleProp, StyleSheet, Text, View, ViewComponent, ViewStyle } from 'react-native'
 import Slider from '@react-native-community/slider';
 import style from '../../common/style';
 import imageUrl from '../../image/image';
-export default function SliderBar({
+import { lightColors } from '../../common/color';
+export default function SliderBarFullScreenForMusic({
+    style={},
     currentTimeState,
     allTime,
     setTime,
 }:{
+    style?: StyleProp<ViewStyle>
     currentTimeState:number,
     allTime:{
         playableDuration: number;
@@ -17,7 +20,7 @@ export default function SliderBar({
 }) {
     const progressValue = useMemo(()=>{
         return currentTimeState/allTime.seekableDuration
-    },[currentTimeState,allTime])
+    },[currentTimeState])
     const onSliderChange = (event:any)=>{
         setTime(event*allTime.seekableDuration)
     }
@@ -36,19 +39,25 @@ export default function SliderBar({
     },[allTime,currentTimeState])
   return (
     <View style={styles.box}>
+         <Text style={{
+            color:lightColors.darkPrimary,
+            fontSize:12,
+           
+        }}>{currentTime}</Text>
         <Slider 
         value={progressValue} 
         onValueChange={onSliderChange}
         tapToSeek={true}
-        style={styles.slider}
+        style={[styles.slider,style]}
         thumbImage={imageUrl.video.bilibili}
-        minimumTrackTintColor={"pink"}
+        minimumTrackTintColor={lightColors.darkPrimary}
+        maximumTrackTintColor={lightColors.mediumGrey}
         >
         </Slider>
         <Text style={{
-            color:"white",
+            color:lightColors.darkPrimary,
             fontSize:12,
-        }}>{currentTime}/{fullTime}</Text>
+        }}>{fullTime}</Text>
     </View>
   )
 }
@@ -60,7 +69,7 @@ const styles = StyleSheet.create({
         alignItems:"center",
     },
     slider:{
-        width:(style.DeviceWidth-100)*0.4,
+        width:(style.DeviceWidth-120),
         height:20,
     }
 })

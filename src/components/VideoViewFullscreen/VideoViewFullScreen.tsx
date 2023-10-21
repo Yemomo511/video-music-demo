@@ -147,7 +147,7 @@ export default function VideoViewFullscreen(props: props) {
           <SliderBar
             currentTimeState={currentTime}
             allTime={allTimeData}
-            setVideoTime={setVideoTimeMySet}></SliderBar>
+            setTime={setVideoTimeMySet}></SliderBar>
           <View style={styles.footerBox}>
             {/*暂停与开始 */}
             <Pause onPress={()=>{

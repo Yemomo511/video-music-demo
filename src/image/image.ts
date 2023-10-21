@@ -15,6 +15,18 @@ const imageUrl = {
     common:{
         back:require("../../images/video/back.webp"),
         option:require("../../images/video/option.webp"),
+        share:require("../../images/common/share.webp"),
+        list:require("../../images/common/list.webp"),
+    },
+    music:{
+        poster:require("../../images/Music/musicPoster.webp"),
+        bar:require("../../images/Music/musicBar.webp"),
+        musicUnLike:require("../../images/Music/musicLike.webp"),
+        musicLike:require("../../images/Music/musicLikeEnsure.webp"),
+        lastMusic:require("../../images/Music/lastMusic.webp"),
+        nextMusic:require("../../images/Music/nextMusic.webp"),
+        play:require("../../images/Music/musicPlay.webp"),
+        pause:require("../../images/Music/musicPause.webp"),
     }
 }
 export default imageUrl;

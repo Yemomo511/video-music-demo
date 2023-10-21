@@ -7,7 +7,7 @@ export default function SliderBarFullScreen({
     style={},
     currentTimeState,
     allTime,
-    setVideoTime,
+    setTime,
 }:{
     style?: StyleProp<ViewStyle>
     currentTimeState:number,
@@ -15,13 +15,13 @@ export default function SliderBarFullScreen({
         playableDuration: number;
         seekableDuration: number;
     }
-    setVideoTime:React.Dispatch<React.SetStateAction<number>>,
+    setTime:React.Dispatch<React.SetStateAction<number>>,
 }) {
     const progressValue = useMemo(()=>{
         return currentTimeState/allTime.seekableDuration
     },[currentTimeState])
     const onSliderChange = (event:any)=>{
-        setVideoTime(event*allTime.seekableDuration)
+        setTime(event*allTime.seekableDuration)
     }
     const translateTime = (time:number)=>{
         const hour = Math.floor(time/3600)

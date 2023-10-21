@@ -7,6 +7,7 @@
 
 
 #import "RNAudio.h"
+#import "AudioDefine.h"
 #import <React/RCTUtils.h>
 
 #import <React/RCTEventEmitter.h>
@@ -16,7 +17,10 @@
   NSMutableDictionary *_playerPool;
   NSMutableDictionary *_callbackPool;
   BOOL _isRouteClose;
+  NSNumber *_currentTime;
+  
 }
+
 
 @synthesize _key = _key;
 
@@ -35,11 +39,14 @@
   //TODO，待事件转发部署
   if (routerChangeReason ==  AVAudioSessionRouteChangeReasonNewDeviceAvailable){
     [player play];
+    [self setOnPlay:YES forPlayKey:_key];
+    
   }
   else if(routerChangeReason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable){
     //此处原因是断掉链接
     [self setIsRouteClose:true];
     [player pause];
+    [self setOnPlay:NO forPlayKey:_key];
   }
 }
 //音频中断观察回调函数，参考https://developer.apple.com/documentation/avfaudio/handling_audio_interruptions?language=objc
@@ -53,12 +60,15 @@
     //判断是否是蓝牙断联导致的音频中断
     if ([self isRouteClose]){
       [player pause];
+      [self setOnPlay:NO forPlayKey:_key];
     }else{
       [player play];
+      [self setOnPlay:YES forPlayKey:_key];
     }
   }
 }
 //获取和设置是否是设备断联，防止中断和route改变发生冲突
+
 -(void) setIsRouteClose:(BOOL)isRouteClose{
   if (!_isRouteClose){
     _isRouteClose = false;
@@ -82,14 +92,22 @@
   return _playerPool;
 }
 -(NSMutableDictionary *)callBackPool{
-  if (_callbackPool){
+  if (!_callbackPool){
     _callbackPool =  [NSMutableDictionary new];
   }
   return _callbackPool;
 }
+-(NSNumber *) currentTime{
+  if (!_currentTime){
+    _currentTime = [NSNumber new];
+  }
+  return _currentTime;
+}
+-(void) setCurrentTime:(NSNumber*)time{
+  _currentTime = time;
+}
 //根据key获取player
 -(AVAudioPlayer *) playerForKey:(NSNumber *)key{
-
   return [[self playerPool] objectForKey:key];
 }
 //获取player的key
@@ -129,10 +147,12 @@
     }
   }
 }
+
 RCT_EXPORT_MODULE();
+
 //开启RCTEventEmiiter事件调度
--(NSArray<NSString *> *) supportedEvents{
-  return @[@"onPlayerChange"];
+- (NSArray<NSString *> *)supportedEvents {
+    return [NSArray arrayWithObjects:PLAY_EVENT,CURRENTTIME_EVENT, nil];
 }
 
 //暴露常量，notifacation需要接受很多的专业词汇
@@ -148,13 +168,19 @@ RCT_EXPORT_MODULE();
            [self getDirectory:NSLibraryDirectory],
            @"NSLibraryDirectory",
            [self getDirectory:NSCachesDirectory],
-          @"NSCachesDirectory", nil];
+          @"NSCachesDirectory",
+            PLAY_EVENT,
+          @"playEvent",
+          CURRENTTIME_EVENT,
+          @"currentTimeEvent",
+          nil];
 };
-//初始化
-RCT_EXPORT_METHOD(init:(NSString *)fileName
-                  Key:(nonnull NSNumber *)key
-                  WithOptions:(NSDictionary *)options
-                  WithCallback:(RCTResponseSenderBlock) withCallback){
+
+-(void) initAudio:
+        (NSString *)fileName
+         Key:(nonnull NSNumber *)key
+         WithOptions:(NSDictionary *)options
+WithCallback:(RCTResponseSenderBlock) withCallback{
   NSError* error;
   NSURL* fileNameUrl;
   AVAudioPlayer* player;
@@ -163,12 +189,10 @@ RCT_EXPORT_METHOD(init:(NSString *)fileName
   NSLog(@"%@",fileNameEscaped);
   if ([fileNameEscaped hasPrefix:@"http"]){
     fileNameUrl = [NSURL URLWithString:fileNameEscaped];
-    NSURLRequest *request = [NSURLRequest requestWithURL:fileNameUrl];
-    NSURLSession *session = [NSURLSession sharedSession];
     //目前这里有bug，待进一步处理
     NSData *data = [NSData dataWithContentsOfURL:fileNameUrl];
     player = [[AVAudioPlayer alloc] initWithData:data error:&error];
-    }
+  }
   else{
     fileNameUrl = [NSURL URLWithString:fileNameEscaped];
     player = [[AVAudioPlayer alloc] initWithContentsOfURL:fileNameUrl error:&error];
@@ -179,24 +203,33 @@ RCT_EXPORT_METHOD(init:(NSString *)fileName
       //player初始化
       player.delegate = self;
       player.enableRate = YES;
+      [self setCurrentTime:0];
       [player prepareToPlay];
       [[self playerPool] setObject:player forKey:key];
-      
       withCallback(@[[NSNull null],
                      [
                        NSDictionary dictionaryWithObjectsAndKeys:
                          [NSNumber numberWithDouble:[player duration]],
-                     @"duration",
-                     [NSNumber numberWithUnsignedLong:[player numberOfChannels]],
+                       @"duration",
+                       [NSNumber numberWithUnsignedLong:[player numberOfChannels]],
                        @"numberOfChannels",
                        nil]
                    ]);
     }
   }else{
-      withCallback(@[RCTJSErrorFromNSError(error),[NSNull null]]);
-    }
+    withCallback(@[RCTJSErrorFromNSError(error),[NSNull null]]);
   }
-
+}
+//初始化
+RCT_EXPORT_METHOD(init:(NSString *)fileName
+                  Key:(nonnull NSNumber *)key
+                  WithOptions:(NSDictionary *)options
+                  WithCallback:(RCTResponseSenderBlock) withCallback){
+  [self initAudio:fileName Key:key WithOptions:options WithCallback:withCallback];
+}
+RCT_EXPORT_METHOD(switchAudio){
+  
+}
 
 //默认启动
 RCT_EXPORT_METHOD(enabled:(BOOL) enabled){
@@ -277,9 +310,6 @@ RCT_EXPORT_METHOD(play:(nonnull NSNumber *) key withCallBack:(RCTResponseSenderB
     //配置他的回调，根据传来的
     [[self callBackPool]setObject:[callBack copy] forKey:key];
     [player play];
-    callBack(@[@"sucess"]);
-  }else{
-    callBack(@[@"no player"]);
   }
 }
 //暂停
@@ -308,8 +338,53 @@ RCT_EXPORT_METHOD(stop:(nonnull NSNumber *)key withCallback:(RCTResponseSenderBl
   AVAudioPlayer* player =  [self playerForKey:key];
   if (player){
     [player stop];
+    _currentTime = 0;
     player.currentTime = 0;
     callBack(@[]);
+  }
+}
+//设置播放进度
+RCT_EXPORT_METHOD(getCurrentTime:(nonnull NSNumber*) key withCallBack:(RCTResponseSenderBlock) callBack){
+  dispatch_async(dispatch_get_global_queue(0, 0),^{
+    AVAudioPlayer* player = [self playerForKey:key];
+    if (player){
+      dispatch_async(dispatch_get_main_queue(), ^{
+        callBack(@[[NSNumber numberWithDouble:player.currentTime],[NSNull null]]);
+                      });
+    }
+    else{
+      callBack(@[[NSNull null],@"no found player"]);
+    }
+    
+  });
+}
+
+RCT_EXPORT_METHOD(setCurrentTime:(nonnull NSNumber *)key
+                  time:(nonnull NSNumber*)time
+                  callBack:(RCTResponseSenderBlock) callback){
+  AVAudioPlayer * player = [self playerForKey:key];
+  if (player){
+    player.currentTime = [time doubleValue];
+    callback(@[[NSNull null]]);
+  }else{
+    callback(@[@"no found player"]);
+  }
+}
+//音量大小
+RCT_EXPORT_METHOD(getVolume:(nonnull NSNumber *)key
+                  callBack:(RCTResponseSenderBlock) callback){
+  AVAudioPlayer * player = [self playerForKey:key];
+  if (player){
+    callback(@[[NSNumber numberWithFloat:player.volume]]);
+  }
+}
+RCT_EXPORT_METHOD(setVolume:(nonnull NSNumber *)key
+                  volume:(nonnull NSNumber *)volume
+                  callBack:(RCTResponseSenderBlock) callback){
+  AVAudioPlayer *player = [self playerForKey:key];
+  if (player){
+    player.volume = [volume floatValue];
+    callback(@[]);
   }
 }
 
@@ -325,6 +400,29 @@ RCT_EXPORT_METHOD(stop:(nonnull NSNumber *)key withCallback:(RCTResponseSenderBl
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(audioSessionInterruptChangeObserver:) name:AVAudioSessionInterruptionNotification
                                              object:nil];
+}
+//事件处理
+-(void)setOnPlay:(BOOL)isplaying forPlayKey:(NSNumber *)key{
+    [self
+     sendEventWithName:PLAY_EVENT
+                body:[NSDictionary dictionaryWithObjectsAndKeys:
+                        [NSNumber numberWithBool:isplaying],
+                        @"isPlaying",
+                        key,
+                        @"playKey",
+                        nil
+                     ]];
+}
+-(void)setOnCurrentTime:(NSNumber *)currentTime forPlayKey:(NSNumber *) key{
+    [self
+     sendEventWithName:@"onCurrentTimeChange"
+                  body:[NSDictionary 
+                        dictionaryWithObjectsAndKeys:
+                        currentTime,
+                        @"currentTime",
+                        key,
+                        @"playkey",
+                        nil]];
 }
 
 
