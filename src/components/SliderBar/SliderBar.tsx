@@ -26,7 +26,7 @@ export default function SliderBar({
         const minuteTime = time%3600
         const minute = Math.floor(minuteTime/60)
         const second = Math.floor(time%60)
-        return `${hour>0?`${hour}:`:""}${minute>10?minute:"0"+minute}:${second>10?second:"0"+second}`
+        return `${hour>0?`${hour}:`:""}${minute>=10?minute:"0"+minute}:${second>=10?second:"0"+second}`
     }
     const fullTime = useMemo(()=>{
         return translateTime(allTime.seekableDuration)

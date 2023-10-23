@@ -19,7 +19,11 @@ const imageUrl = {
         list:require("../../images/common/list.webp"),
     },
     music:{
-        poster:require("../../images/Music/musicPoster.webp"),
+        poster:{
+            weatherSon:require("../../images/Music/musicPoster.webp"),
+            youSunday:require("../../images/Music/Poter/you_sunday.webp"),
+            pvz:require("../../images/Music/Poter/pvz.webp"),
+        },
         bar:require("../../images/Music/musicBar.webp"),
         musicUnLike:require("../../images/Music/musicLike.webp"),
         musicLike:require("../../images/Music/musicLikeEnsure.webp"),
@@ -27,6 +31,7 @@ const imageUrl = {
         nextMusic:require("../../images/Music/nextMusic.webp"),
         play:require("../../images/Music/musicPlay.webp"),
         pause:require("../../images/Music/musicPause.webp"),
+        icon:require("../../images/Music/musicIcon.webp"),
     }
 }
 export default imageUrl;

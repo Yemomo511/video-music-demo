@@ -4,6 +4,8 @@ import SliderBarFullScreenForMusic from '../SliderBarFullScreenForMusic/SliderBa
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import imageUrl from '../../image/image';
+import Slider from '@react-native-community/slider';
+
 
 export default function MusicBottom({
   isPlay,
@@ -13,6 +15,9 @@ export default function MusicBottom({
   next,
   last,
   play,
+  volume,
+  setVolume
+
 }: {
   isPlay: boolean;
   currentTime: number;
@@ -24,6 +29,8 @@ export default function MusicBottom({
   next: ()=>void;
   last: ()=>void;
   play: (key: number, callback: (str: string) => void) => void;
+  volume: number;
+  setVolume : React.Dispatch<React.SetStateAction<number>>;
 }) {
   const [isLike, setIsLike] = useState<Boolean>(false);
   const renderButton = useCallback((imgUrl:any,onPress:any)=>{
@@ -37,9 +44,11 @@ export default function MusicBottom({
             source={
                 imgUrl
             }></FastImage>
+          
         </TouchableOpacity>
     )
   },[play,last,next,isLike])
+
   return (
     <View>
       <SliderBarFullScreenForMusic

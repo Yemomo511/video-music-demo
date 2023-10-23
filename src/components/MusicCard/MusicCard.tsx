@@ -9,9 +9,11 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withRepeat, withTi
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 export default function MusicCard({
-  isPause=true
+  isPause=true,
+  source
 }:{
   isPause?:boolean
+  source:any
 }) {
   const rotateValue = useSharedValue(0)
   const barRotateValue = useSharedValue(-20)
@@ -29,6 +31,9 @@ export default function MusicCard({
       startRotate()
     }
   },[isPause])
+  useEffect(()=>{
+    rotateValue.value = 0
+  },[source])
   const RadialGradientList =[
     {
       color:lightColors.black,
@@ -45,12 +50,11 @@ export default function MusicCard({
     cancelAnimation(rotateValue)
   }
   const startRotate = ()=>{
-    rotateValue.value =withRepeat(withTiming(360,{
+    rotateValue.value = withRepeat(withTiming(rotateValue.value+360,{
       duration:10000,
       easing:Easing.linear,
     }),-1)
   }
-  
   const posterAnimatedStyle = useAnimatedStyle(()=>{
     return{
       transform:[
@@ -93,7 +97,7 @@ export default function MusicCard({
         {/* 模拟一个唱片*/}
         <Animated.View style={[posterAnimatedStyle,styles.blackCard]}>
           {/**唱片图片 */}
-          <FastImage source={imageUrl.music.poster} style={styles.poster}></FastImage>
+          <FastImage source={source} style={styles.poster}></FastImage>
         </Animated.View>
       </View>
       <TouchableOpacity onPress={()=>{

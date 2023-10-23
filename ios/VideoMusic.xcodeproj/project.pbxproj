@@ -12,6 +12,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		735FA82F2AE658B100CACEF5 /* escape_ground.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 735FA82E2AE658B100CACEF5 /* escape_ground.mp3 */; };
+		735FA8322AE663CD00CACEF5 /* you_sunday.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 735FA8312AE663CD00CACEF5 /* you_sunday.mp3 */; };
 		73C85E972ADD2C770092202D /* StatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C85E962ADD2C770092202D /* StatusBarStyle.m */; };
 		73C85EAE2AE02C140092202D /* RNAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 73C85EAD2AE02C140092202D /* RNAudio.m */; };
 		73C85EB22AE02D070092202D /* walk_grass.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 73C85EB12AE02D060092202D /* walk_grass.mp3 */; };
@@ -45,6 +47,8 @@
 		5709B34CF0A7D63546082F79 /* Pods-VideoMusic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoMusic.release.xcconfig"; path = "Target Support Files/Pods-VideoMusic/Pods-VideoMusic.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-VideoMusic-VideoMusicTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoMusic-VideoMusicTests.debug.xcconfig"; path = "Target Support Files/Pods-VideoMusic-VideoMusicTests/Pods-VideoMusic-VideoMusicTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-VideoMusic.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VideoMusic.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		735FA82E2AE658B100CACEF5 /* escape_ground.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = escape_ground.mp3; sourceTree = "<group>"; };
+		735FA8312AE663CD00CACEF5 /* you_sunday.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = you_sunday.mp3; sourceTree = "<group>"; };
 		73C85E952ADD2C770092202D /* StatusBarStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatusBarStyle.h; sourceTree = "<group>"; };
 		73C85E962ADD2C770092202D /* StatusBarStyle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusBarStyle.m; sourceTree = "<group>"; };
 		73C85EAC2AE02C140092202D /* RNAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RNAudio.h; sourceTree = "<group>"; };
@@ -98,8 +102,8 @@
 		13B07FAE1A68108700A75B9A /* VideoMusic */ = {
 			isa = PBXGroup;
 			children = (
+				735FA8302AE663BA00CACEF5 /* New Group */,
 				73E949BA2AE21FC30075509F /* RNAudioQueue */,
-				73C85EB12AE02D060092202D /* walk_grass.mp3 */,
 				73C85EAB2AE02BAC0092202D /* RNAudio */,
 				73C85E8F2ADD2A440092202D /* StatusBarStyle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -120,6 +124,16 @@
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-VideoMusic-VideoMusicTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		735FA8302AE663BA00CACEF5 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				735FA8312AE663CD00CACEF5 /* you_sunday.mp3 */,
+				73C85EB12AE02D060092202D /* walk_grass.mp3 */,
+				735FA82E2AE658B100CACEF5 /* escape_ground.mp3 */,
+			);
+			name = "New Group";
 			sourceTree = "<group>";
 		};
 		73C85E8F2ADD2A440092202D /* StatusBarStyle */ = {
@@ -288,6 +302,8 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				735FA8322AE663CD00CACEF5 /* you_sunday.mp3 in Resources */,
+				735FA82F2AE658B100CACEF5 /* escape_ground.mp3 in Resources */,
 				73C85EB22AE02D070092202D /* walk_grass.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -656,7 +672,8 @@
 					"-ld_classic",
 					"-Wl",
 					"-ld_classic",
-					"-Wl -ld_classic ",
+					"-Wl",
+					"-ld_classic",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
@@ -733,7 +750,8 @@
 					"-ld_classic",
 					"-Wl",
 					"-ld_classic",
-					"-Wl -ld_classic ",
+					"-Wl",
+					"-ld_classic",
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;

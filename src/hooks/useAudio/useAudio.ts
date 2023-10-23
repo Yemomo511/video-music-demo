@@ -1,5 +1,9 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {NativeModules, NativeEventEmitter, InteractionManager} from 'react-native';
+import {
+  NativeModules,
+  NativeEventEmitter,
+  InteractionManager,
+} from 'react-native';
 import {ImageResolvedAssetSource} from 'react-native';
 import {useEvent} from 'react-native-reanimated';
 
@@ -47,7 +51,7 @@ interface RNAudioType {
     currentTime: number,
     callback: (string: string) => void,
   ) => void;
-  getVolume: (key: number, callback: () => void) => void;
+  getVolume: (key: number, callback: (data: number) => void) => void;
   setVolume: (key: number, volume: number, callback: () => void) => void;
   //常量
   MainBundlePath: string;
@@ -75,13 +79,15 @@ export default function useAudio(
   name: string = '',
   options: any = {},
   config: configType = 'MAIN_BUNDLE',
+  onFinish: () => void,
 ) {
   const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource');
   const option = useEvent(options);
   const [audioData, setAudioData] = useState<audioDataType>();
   const [isPlayState, setIsPlayState] = useState<boolean>(false);
   const [currentTimeState, setCurrentTimeState] = useState<number>(0);
-  const [myCurrentTimeState,setMyCurrentTimeState] = useState<number>(0)
+  const [myCurrentTimeState, setMyCurrentTimeState] = useState<number>(0);
+  const [volumeState, setVolumeState] = useState<number>(0.5);
   const fileName = useMemo(() => {
     let asset = resolveAssetSource(name);
     if (asset) {
@@ -121,15 +127,27 @@ export default function useAudio(
     };
   }, [isPlayState]);
 
-  useEffect(()=>{
-    if(isPlayState){
-      setCurrentTime(id,myCurrentTimeState,(error:string)=>{
-        if (error){
-          console.log(error)
+  useEffect(() => {
+    if (isPlayState) {
+      setCurrentTime(id, myCurrentTimeState, (error: string) => {
+        if (error) {
+          console.log(error);
         }
-      })
+      });
     }
-  },[myCurrentTimeState])
+  }, [myCurrentTimeState]);
+  //查看音量,初始化
+  useEffect(() => {
+    getVolume(id, (data: number) => {
+      setVolumeState(data);
+    });
+  }, []);
+  //根据状态修改音量
+  useEffect(() => {
+    setVolume(id, volumeState, () => {
+      console.log('音量修改成功');
+    });
+  }, [volumeState]);
 
   const init = (
     fileName: string,
@@ -140,15 +158,24 @@ export default function useAudio(
     RNAudio.init(fileName, id, options || {}, callback);
   };
   useEffect(() => {
-    console.log(option.current.worklet);
+    console.log('change');
+    setCurrentTimeState(0);
+    setIsPlayState(false);
+    setMyCurrentTimeState(0);
     init(fileName, id, option, (error: any, data: audioDataType) => {
       setAudioData(data);
+      play(id);
     });
     RNAudio.enabled(true);
+    return () => {
+      pause(id, () => {
+        console.log(id);
+      });
+    };
   }, [id, fileName, option]);
   const play = (key: number) => {
     RNAudio.play(key, (array: any) => {
-      setIsPlayState(false);
+      onFinish();
       console.log(array);
     });
     setIsPlayState(true);
@@ -183,7 +210,7 @@ export default function useAudio(
   ) => {
     RNAudio.setCurrentTime(key, currentTime, callback);
   };
-  const getVolume = (key: number, callback: () => void) => {
+  const getVolume = (key: number, callback: (data: number) => void) => {
     RNAudio.getVolume(key, callback);
   };
   const setVolume = (key: number, volume: number, callback: () => void) => {
@@ -210,6 +237,8 @@ export default function useAudio(
     basicFunc,
     isPlayState,
     currentTimeState,
-    setMyCurrentTimeState
+    setMyCurrentTimeState,
+    volumeState,
+    setVolumeState,
   };
 }
